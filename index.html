@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AiHomeCloud — Apps for Real Life</title>
+  <meta name="description" content="AiHomeCloud builds useful Android apps — FinPath for financial independence planning, WaterTank for home pump automation." />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f8f9fa;
+      color: #222;
+      line-height: 1.6;
+    }
+    header {
+      background: #1B5E20;
+      color: #fff;
+      padding: 48px 24px 40px;
+      text-align: center;
+    }
+    header h1 { font-size: 2rem; font-weight: 800; letter-spacing: -0.5px; }
+    header p { margin-top: 8px; color: rgba(255,255,255,0.8); font-size: 1rem; }
+    main { max-width: 860px; margin: 0 auto; padding: 48px 24px; }
+    .apps { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
+    .app-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .app-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.12); }
+    .app-icon {
+      width: 64px; height: 64px; border-radius: 14px;
+      background: #E8F5E9; display: flex; align-items: center;
+      justify-content: center; font-size: 28px; margin-bottom: 16px;
+    }
+    .app-card h2 { font-size: 1.2rem; font-weight: 700; margin-bottom: 6px; }
+    .app-card p { font-size: 0.9rem; color: #555; margin-bottom: 16px; }
+    .tag {
+      display: inline-block; background: #E8F5E9; color: #1B5E20;
+      font-size: 0.75rem; font-weight: 600; padding: 3px 10px;
+      border-radius: 20px; margin-right: 6px; margin-bottom: 4px;
+    }
+    .links { margin-top: 16px; display: flex; gap: 12px; flex-wrap: wrap; }
+    .links a {
+      font-size: 0.85rem; color: #1B5E20; text-decoration: none;
+      font-weight: 500; border-bottom: 1px solid #A5D6A7;
+    }
+    .mission {
+      background: #fff8e1; border-radius: 16px; padding: 28px;
+      margin-top: 48px; border-left: 4px solid #f9a825;
+    }
+    .mission h2 { font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; }
+    .mission p { font-size: 0.9rem; color: #555; }
+    footer {
+      text-align: center; padding: 32px 24px;
+      font-size: 0.82rem; color: #999;
+    }
+    footer a { color: #1B5E20; text-decoration: none; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>AiHomeCloud</h1>
+  <p>Useful apps for everyday life — private, offline-first, purpose-built.</p>
+</header>
+
+<main>
+  <div class="apps">
+
+    <div class="app-card">
+      <div class="app-icon">📈</div>
+      <h2>FinPath</h2>
+      <p>Your FIRE date calculator. Track net worth, plan early retirement, model SIP projections. 100% private — no cloud, no account.</p>
+      <div>
+        <span class="tag">Finance</span>
+        <span class="tag">FIRE</span>
+        <span class="tag">Android</span>
+      </div>
+      <div class="links">
+        <a href="https://play.google.com/store/apps/details?id=com.aihomecloud.finpath">Play Store</a>
+        <a href="/finpath/privacy">Privacy Policy</a>
+        <a href="/finpath/support">Support</a>
+      </div>
+    </div>
+
+    <div class="app-card">
+      <div class="app-icon">💧</div>
+      <h2>WaterTank</h2>
+      <p>Automate your home water pump via Bluetooth ESP32. Detects supply arrival, starts motor, stops when full. No WiFi needed.</p>
+      <div>
+        <span class="tag">IoT</span>
+        <span class="tag">Home</span>
+        <span class="tag">Android</span>
+      </div>
+      <div class="links">
+        <a href="https://play.google.com/store/apps/details?id=com.aihomecloud.watertank">Play Store</a>
+        <a href="/watertank/privacy">Privacy Policy</a>
+        <a href="/watertank/support">Support</a>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="mission">
+    <h2>🙏 Our Mission</h2>
+    <p>51% of AiHomeCloud's profits go toward food and education for underprivileged children in rural India. Every app purchase contributes directly. Your plan. Their future.</p>
+  </div>
+</main>
+
+<footer>
+  <p>© 2026 AiHomeCloud &nbsp;·&nbsp; <a href="mailto:parasgidd1008@gmail.com">Contact</a> &nbsp;·&nbsp; Built in India 🇮🇳</p>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Support – WaterTank</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; max-width: 720px; margin: 40px auto; padding: 0 20px; color: #222; line-height: 1.7; }
+    h1 { font-size: 1.8rem; margin-bottom: 4px; }
+    h2 { font-size: 1.2rem; margin-top: 32px; color: #0369a1; }
+    p, li { font-size: 0.97rem; }
+    .updated { color: #666; font-size: 0.9rem; margin-bottom: 32px; }
+    ul { padding-left: 20px; }
+    a { color: #0ea5e9; }
+    .back { display: inline-block; margin-bottom: 32px; font-size: 0.9rem; color: #0ea5e9; text-decoration: none; }
+    .contact { background: #e0f2fe; border-radius: 12px; padding: 20px; margin-top: 32px; }
+  </style>
+</head>
+<body>
+  <a href="/" class="back">← AiHomeCloud</a>
+  <h1>WaterTank Support</h1>
+  <p class="updated">WaterTank — Pump Automation via Bluetooth ESP32</p>
+
+  <h2>The app can't find my ESP32</h2>
+  <p>Make sure: (1) ESP32 is powered on, (2) Bluetooth is enabled on your phone, (3) Location permission is granted to the app (required by Android for BLE scanning), (4) You are within ~10 metres of the ESP32.</p>
+
+  <h2>How do I set up the hardware?</h2>
+  <p>Full wiring guide and firmware flashing instructions are available in the project's GitHub repository. You'll need an ESP32, YF-S201 flow sensor, JSN-SR04T ultrasonic sensor, and a relay module (~₹1,200 total).</p>
+
+  <h2>What is Simulation Mode?</h2>
+  <p>Long-press the connection dot on the Dashboard to activate Simulation Mode. This lets you see the full app experience without any hardware — it simulates a complete pump cycle every few seconds.</p>
+
+  <h2>How do I view pump history?</h2>
+  <p>The Log tab shows every pump cycle. The History tab lets you browse by date. The Stats tab shows monthly summaries and total motor run time.</p>
+
+  <h2>The pump isn't stopping at full tank</h2>
+  <p>Check the TANK_DEPTH_CM value in the ESP32 firmware — it needs to match your actual tank depth in centimetres. An incorrect value means the 95% threshold triggers at the wrong level. Reflash the firmware with the correct depth.</p>
+
+  <div class="contact">
+    <strong>Still need help?</strong><br/>
+    Email us at <a href="mailto:parasgidd1008@gmail.com">parasgidd1008@gmail.com</a>
+    and we'll respond within 48 hours.
+  </div>
+
+  <p style="margin-top:32px"><a href="/">← Back to AiHomeCloud</a></p>
+</body>
+</html>
