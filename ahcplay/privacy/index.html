@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy – AHC Player</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      max-width: 720px;
+      margin: 40px auto;
+      padding: 0 20px;
+      color: #222;
+      line-height: 1.7;
+    }
+    h1 { font-size: 1.8rem; margin-bottom: 4px; }
+    h2 { font-size: 1.2rem; margin-top: 32px; }
+    p, li { font-size: 0.97rem; }
+    .updated { color: #666; font-size: 0.9rem; margin-bottom: 32px; }
+    ul { padding-left: 20px; }
+    a { color: #7C4DFF; }
+    .back { display: inline-block; margin-bottom: 32px; font-size: 0.9rem; color: #7C4DFF; text-decoration: none; }
+  </style>
+</head>
+<body>
+
+  <a href="/" class="back">← AiHomeCloud</a>
+
+  <h1>Privacy Policy</h1>
+  <p class="updated">Last updated: June 14, 2026</p>
+
+  <p>
+    AHC Player ("we", "our", or "us") is a media player for Android TV / Fire TV that streams
+    video from your own home network storage (an AiHomeCloud NAS, an SMB share on your LAN,
+    or local/USB storage on the device). This policy explains what data the app accesses and
+    how it is used.
+  </p>
+
+  <h2>1. Data We Collect</h2>
+  <p>AHC Player does not operate any servers of its own and does not collect personal data for
+    advertising or analytics. The app handles the following data:</p>
+  <ul>
+    <li><strong>Your media library</strong> – filenames and folder paths from the storage sources
+      you add (your AiHomeCloud NAS, SMB shares, internal storage, or USB drives). This never
+      leaves your device except as described in Section 2.</li>
+    <li><strong>Login credentials</strong> – usernames and PINs for your own AiHomeCloud NAS
+      profiles, and authentication tokens issued by your NAS. These are stored using Android's
+      encrypted storage (EncryptedSharedPreferences) on your device and sent only to the NAS
+      host you configured.</li>
+    <li><strong>Watch history &amp; "Continue Watching" progress</strong> – stored locally on
+      your device in a SQLite database. Never transmitted anywhere.</li>
+    <li><strong>App settings</strong> – your configured sources, profile selection, and optional
+      custom TMDB API key, stored locally on your device.</li>
+  </ul>
+
+  <h2>2. Third-Party Services</h2>
+  <p>
+    AHC Player uses <strong>The Movie Database (TMDB)</strong> to fetch posters, backdrops,
+    titles, and genre information for the media in your library. To do this, the app sends the
+    parsed title of a file (e.g. "Inception 2010") to TMDB's public API. No personal data,
+    device identifiers, or file contents are sent to TMDB — only the title text used for the
+    metadata lookup. See TMDB's privacy policy at
+    <a href="https://www.themoviedb.org/privacy-policy">themoviedb.org/privacy-policy</a>.
+  </p>
+  <p>
+    All other network connections (to your AiHomeCloud NAS or SMB shares) go directly from your
+    device to servers on your own local network, over a connection secured with certificate
+    pinning. AiHomeCloud does not operate or have access to these servers.
+  </p>
+
+  <h2>3. Local &amp; Network Storage Access</h2>
+  <p>
+    To browse and play files from internal storage or a USB drive, the app requests the Android
+    "Videos" / storage permission. This is used solely to list and play video files you choose —
+    nothing is uploaded or shared. The app also uses your WiFi network connection (ACCESS_WIFI_STATE,
+    ACCESS_NETWORK_STATE) to discover and connect to your NAS and SMB shares on your local network.
+  </p>
+
+  <h2>4. Data Sharing</h2>
+  <p>
+    We do not sell, rent, or share any data with third parties, other than the minimal TMDB
+    metadata lookups described above. There are no advertising SDKs, and no analytics or crash
+    reporting services in this app.
+  </p>
+
+  <h2>5. Data Deletion</h2>
+  <p>
+    All app data — saved sources, login tokens, watch history, and cached metadata — is stored
+    locally on your device. You can remove it at any time via Android Settings → Apps → AHC
+    Player → Clear Data, or by uninstalling the app. AiHomeCloud has no copy of this data and
+    cannot delete it on your behalf.
+  </p>
+
+  <h2>6. Children's Privacy</h2>
+  <p>
+    AHC Player is not directed at children under 13. We do not knowingly collect data from
+    children.
+  </p>
+
+  <h2>7. Changes to This Policy</h2>
+  <p>
+    We may update this policy occasionally. The "Last updated" date at the top will reflect any
+    changes. Continued use of the app after changes constitutes acceptance of the updated policy.
+  </p>
+
+  <h2>8. Contact</h2>
+  <p>
+    Questions about this policy: <a href="mailto:parasgidd1008@gmail.com">parasgidd1008@gmail.com</a>
+  </p>
+
+  <br/>
+  <p><a href="/">← Back to AiHomeCloud</a></p>
+
+</body>
+</html>
