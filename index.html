@@ -65,10 +65,6 @@
   --accent: #2f5d47;
   --accent-strong: #244a38;
   --accent-ink: #f2efe4;
-  --console-bg: #18211b;
-  --console-ink: #eee9d6;
-  --console-dim: #93a08e;
-  --console-acc: #9fd3ae;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
@@ -83,10 +79,6 @@
     --accent: #7db894;
     --accent-strong: #9ccdae;
     --accent-ink: #10190f;
-    --console-bg: #0d110c;
-    --console-ink: #e6e1cd;
-    --console-dim: #8f9a86;
-    --console-acc: #9fd3ae;
   }
 }
 :root[data-theme="dark"] {
@@ -101,10 +93,6 @@
   --accent: #7db894;
   --accent-strong: #9ccdae;
   --accent-ink: #10190f;
-  --console-bg: #0d110c;
-  --console-ink: #e6e1cd;
-  --console-dim: #8f9a86;
-  --console-acc: #9fd3ae;
 }
 
 /* ---------- Base ---------- */
@@ -270,37 +258,6 @@ h3 { font-weight: 600; }
   opacity: .8; z-index: 1; filter: drop-shadow(0 1px 2px rgba(0,0,0,.35));
 }
 .hero-cloud svg { width: 100%; height: 100%; }
-.console {
-  margin: clamp(2.5rem, 6vw, 4.5rem) 0 0;
-  background: var(--console-bg); color: var(--console-ink);
-  border: 1px solid var(--line); border-radius: 14px; overflow: hidden;
-}
-.console-bar {
-  display: flex; align-items: center; gap: .45rem;
-  padding: .7rem 1rem; border-bottom: 1px solid color-mix(in srgb, var(--console-ink) 16%, transparent);
-}
-.console-bar i {
-  width: 9px; height: 9px; border-radius: 50%;
-  background: var(--console-dim); opacity: .55;
-}
-.console-bar b {
-  margin-left: auto; font-family: "IBM Plex Mono", ui-monospace, monospace;
-  font-weight: 500; font-size: .7rem; letter-spacing: .1em; text-transform: uppercase;
-  color: var(--console-dim);
-}
-.console pre {
-  margin: 0; padding: 1.15rem 1.25rem; overflow-x: auto;
-  font: 400 .82rem/1.75 "IBM Plex Mono", ui-monospace, monospace;
-  color: var(--console-ink);
-}
-.console pre .c-dim { color: var(--console-dim); }
-.console pre .c-acc { color: var(--console-acc); }
-.console-note {
-  margin: 0; padding: .9rem 1.25rem;
-  border-top: 1px solid color-mix(in srgb, var(--console-ink) 16%, transparent);
-  color: var(--console-dim); font-size: .84rem;
-}
-.console-note code { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: .78rem; color: var(--console-acc); }
 
 /* ---------- Steps ---------- */
 .steps { display: grid; gap: 2.2rem; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin-top: 2.6rem; }
@@ -388,7 +345,17 @@ h3 { font-weight: 600; }
 .tiers { display: grid; gap: 1.2rem; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); align-items: stretch; }
 .tier {
   background: var(--surface); border: 1px solid var(--line); border-radius: 16px;
-  padding: 1.6rem; display: flex; flex-direction: column;
+  padding: 1.6rem; display: flex; flex-direction: column; position: relative;
+  transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+}
+.tier:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 18px 34px -14px color-mix(in srgb, var(--ink) 32%, transparent);
+  border-color: var(--accent); z-index: 2;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tier { transition: border-color .2s ease; }
+  .tier:hover { transform: none; box-shadow: none; }
 }
 .tier-lead { border: 2px solid var(--accent); }
 .ledger-no {
@@ -543,7 +510,7 @@ footer nav a:hover { color: var(--accent); }
     <div>
       <p class="kicker">A home cloud · not a cloud service</p>
       <h1>Your photos already have a <em>home</em>.</h1>
-      <p class="lede">AiHomeCloud turns hardware you already own — the old laptop in a drawer, or a small board costing about $35 — into a private backup server for your family's photos and files. Everything stays in your house, on your disk, under your rules.</p>
+      <p class="lede">AiHomeCloud turns hardware you already own — the old laptop in a drawer, a spare PC, or a small SBC like a Raspberry Pi or Radxa board costing about $35 — into a private backup server for your family's photos and files. Everything stays in your house, on your disk, under your rules.</p>
       <div class="cta-row">
         <a class="btn btn-solid" href="https://play.google.com/store/apps/details?id=com.aihomecloud.app">Get the Android app</a>
         <a class="btn btn-line" href="https://github.com/chaitraparas/aihomecloud-server">Run the open-source server</a>
@@ -563,16 +530,6 @@ footer nav a:hover { color: var(--accent); }
       <figcaption>Your phone talks to the server inside your house. The cloud — crossed out — gets nothing.</figcaption>
     </figure>
   </div>
-  <div class="wrap">
-    <div class="console" role="img" aria-label="Terminal output showing mDNS discovery of the service _aihomecloud._tcp.local">
-      <div class="console-bar"><i></i><i></i><i></i><b>No setup · no accounts · no pairing codes</b></div>
-      <pre><span class="c-dim"># what your phone does by itself on home Wi-Fi:</span>
-$ dns-sd -B _aihomecloud._tcp.local
-Browsing for _aihomecloud._tcp.local
-<span class="c-acc">Add  aihomecloud.local.  →  192.168.1.42:8443</span></pre>
-      <p class="console-note">Standard mDNS — check it yourself with <code>dns-sd</code> or Avahi. After discovery, TLS 1.3 with certificate pinning takes over.</p>
-    </div>
-  </div>
 </section>
 
 <!-- ======================= 01 HOW ======================= -->
@@ -584,7 +541,7 @@ Browsing for _aihomecloud._tcp.local
       <div class="step">
         <span class="num">01.</span>
         <h3>Dig out the spare hardware</h3>
-        <p>An old laptop, a retired desktop, or a small board costing about $35. Install the <a href="https://github.com/chaitraparas/aihomecloud-server">open-source server</a>. If it can sit in a corner and stay on, it can be your cloud.</p>
+        <p>An old laptop, a retired desktop, or a small SBC — a Raspberry Pi, a Radxa, or similar — costing about $35. Install the <a href="https://github.com/chaitraparas/aihomecloud-server">open-source server</a>. If it can sit in a corner and stay on, it can be your cloud.</p>
       </div>
       <div class="step">
         <span class="num">02.</span>
@@ -723,7 +680,7 @@ Browsing for _aihomecloud._tcp.local
         </tbody>
       </table>
     </div>
-    <p class="fine" style="margin-top:.9rem">Google Photos figures per its published storage tiers; NAS figure is a typical entry device. AiHomeCloud runs on what you already have — even a ~$35 board.</p>
+    <p class="fine" style="margin-top:.9rem">Google Photos figures per its published storage tiers; NAS figure is a typical entry device. AiHomeCloud runs on what you already have — even a ~$35 SBC.</p>
   </div>
 </section>
 
@@ -733,12 +690,12 @@ Browsing for _aihomecloud._tcp.local
     <div class="chapter-head"><span class="ck">Chapter 05</span><span class="rule"></span><span class="ck ck-r">A fair question</span></div>
     <h2>“Anyone can build an app with AI now. Why pay for this one?”</h2>
     <div class="letter">
-      <p class="drop">From the person who builds it — no script, no funnel.</p>
+      <p class="drop">From the people who build it — no script, no funnel.</p>
       <p>A fair question, and honestly, the first version did come together fast. What that skips: the first version was maybe 20% of the real work.</p>
-      <p>AiHomeCloud took about a year, start to finish — writing the specs, designing around real families, testing on real hardware bought with my own money, and more review cycles than I'll admit. Well over $1,000 went to AI subscriptions along the way. AI sped the typing up; it didn't do the thinking, the testing, or the fixing.</p>
-      <p>And the other 80% never ends: security fixes, Android breaking something new every release, the features people actually ask for. Most solo open-source projects don't die because the code was bad — they fade quietly, when the person behind them stops feeling that anyone cares.</p>
-      <p>You never have to pay. The free tier is the complete product for one person, and it will stay that way. But if AiHomeCloud earns its place in your home, the Family unlock is a genuine way to keep it alive and improving. I'm not too proud to say it matters.</p>
-      <p class="sig">— Paras</p>
+      <p>AiHomeCloud took about a year, start to finish — writing the specs, designing around real families, testing on real hardware bought with our own money, and more review cycles than we'll admit. Well over $1,000 went to AI subscriptions along the way. AI sped the typing up; it didn't do the thinking, the testing, or the fixing.</p>
+      <p>And the other 80% never ends: security fixes, Android breaking something new every release, the features people actually ask for. Most solo open-source projects don't die because the code was bad — they fade quietly, when the people behind them stop feeling that anyone cares.</p>
+      <p>You never have to pay. The free tier is the complete product for one person, and it will stay that way. But if AiHomeCloud earns its place in your home, the Family unlock is a genuine way to keep it alive and improving. We're not too proud to say it matters.</p>
+      <p class="sig">— Chaitra Paras</p>
     </div>
   </div>
 </section>
@@ -747,12 +704,13 @@ Browsing for _aihomecloud._tcp.local
 <section class="sec band" id="maker">
   <div class="wrap">
     <div class="chapter-head"><span class="ck">Chapter 06</span><span class="rule"></span><span class="ck ck-r">The maker</span></div>
-    <h2>Built by one person who had the same problem you do.</h2>
+    <h2>Built by two people who had the same problem you do.</h2>
     <div class="maker-grid">
       <div>
-        <p>I'm Paras. I build AiHomeCloud alone, from India. It began the day I realised my own family was paying Google every month to keep our own memories — while a perfectly good laptop sat in a drawer doing nothing. So I put those two facts together, and about a year later, this existed.</p>
-        <p>No venture fund, no growth team, no exit plan. Just software I'm proud to put my name on, running on hardware you own, answerable to the people who use it.</p>
-        <p class="sig-big">— Paras<span>Solo developer · India</span></p>
+        <p>It began the day we realised our own family was paying Google every month to keep our own memories — while a perfectly good laptop sat in a drawer doing nothing. So we put those two facts together, and about a year later, this existed.</p>
+        <p>No venture fund, no growth team, no exit plan. Just software we're proud to put our name on, running on hardware you own, answerable to the people who use it.</p>
+        <p>We both work full-time jobs. Chaitra and Paras, trying to be present as mother and father for our baby daughter — someone we hope is a little proud of this one day. AiHomeCloud is what's left of our evenings, and our way of giving back, in whatever small way we can, to the open-source and homelab community that taught us most of what we know.</p>
+        <p class="sig-big">— Chaitra &amp; Paras<span>India</span></p>
       </div>
       <aside class="pledge">
         <p class="pledge-num">51%</p>
@@ -777,6 +735,7 @@ Browsing for _aihomecloud._tcp.local
       </a>
       <p>A private home cloud. Your files never leave your hardware. Server is open source, AGPL-3.0.</p>
       <p class="fine">This page sets no cookies and loads no trackers.</p>
+      <p class="fine">Contact: <a href="mailto:chaitraparas@gmail.com">chaitraparas@gmail.com</a></p>
     </div>
     <nav aria-label="AiHomeCloud links">
       <h4>AiHomeCloud</h4>
@@ -787,14 +746,14 @@ Browsing for _aihomecloud._tcp.local
       <a href="/aihomecloud/support">Support</a>
     </nav>
     <div>
-      <h4>Also by Paras</h4>
+      <h4>Also by Chaitra Paras</h4>
       <p class="foot-app"><a href="/apps.html">FinPath</a> — a FIRE &amp; net-worth tracking app for Android.<br><span class="fp"><a href="/finpath/privacy">Privacy</a> · <a href="/finpath/support">Support</a></span></p>
       <p class="foot-app"><a href="/apps.html">AHC Player</a> — a private, Netflix-style media player for Android TV / Fire TV; streams from an AiHomeCloud server, SMB shares, or local storage.<br><span class="fp"><a href="/ahcplay/privacy">Privacy</a> · <a href="/ahcplay/support">Support</a></span></p>
       <p class="foot-app"><a href="/apps.html">WaterTank</a> — Bluetooth ESP32 home water-pump automation.<br><span class="fp"><a href="/watertank/privacy">Privacy</a> · <a href="/watertank/support">Support</a></span></p>
     </div>
   </div>
   <div class="wrap foot-base">
-    <p>© 2026 AiHomeCloud · Made by one person in India</p>
+    <p>© 2026 AiHomeCloud · Chaitra Paras, India</p>
     <p>51% of profits → food &amp; education for children in rural India</p>
   </div>
 </footer>
