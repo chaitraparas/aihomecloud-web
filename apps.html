@@ -1,0 +1,651 @@
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Other apps by Paras — AiHomeCloud</title>
+<meta name="description" content="FinPath, AHC Player, and WaterTank — three other independent apps built by the same solo developer behind AiHomeCloud.">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#f5f1e8">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#131712">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Karla:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script>
+(function () {
+  var root = document.documentElement, KEY = "ahc-theme";
+  function stored() { try { return localStorage.getItem(KEY); } catch (e) { return null; } }
+  var s = stored();
+  if (s === "light" || s === "dark") root.setAttribute("data-theme", s);
+  function effective() {
+    var t = root.getAttribute("data-theme");
+    if (t) return t;
+    return (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) ? "dark" : "light";
+  }
+  function paint(btn) {
+    if (!btn) return;
+    var dark = effective() === "dark";
+    btn.setAttribute("aria-pressed", dark ? "true" : "false");
+    btn.setAttribute("aria-label", dark ? "Switch to light theme" : "Switch to dark theme");
+    var sun = btn.querySelector(".i-sun"), moon = btn.querySelector(".i-moon");
+    if (sun) sun.hidden = !dark;
+    if (moon) moon.hidden = dark;
+  }
+  document.addEventListener("DOMContentLoaded", function () {
+    var btn = document.getElementById("themeToggle");
+    if (btn) {
+      btn.addEventListener("click", function () {
+        var next = effective() === "dark" ? "light" : "dark";
+        root.setAttribute("data-theme", next);
+        try { localStorage.setItem(KEY, next); } catch (e) {}
+        paint(btn);
+      });
+      paint(btn);
+    }
+    var tog = document.getElementById("navToggle"), nav = document.getElementById("siteNav");
+    if (tog && nav) {
+      tog.addEventListener("click", function () {
+        var open = nav.classList.toggle("open");
+        tog.setAttribute("aria-expanded", open ? "true" : "false");
+      });
+      nav.addEventListener("click", function (e) {
+        if (e.target.closest("a")) { nav.classList.remove("open"); tog.setAttribute("aria-expanded", "false"); }
+      });
+    }
+  });
+})();
+</script>
+<style>
+/* ---------- Tokens: full light palette is the default ---------- */
+:root {
+  color-scheme: light;
+  --paper: #f5f1e8;
+  --surface: #fcfbf5;
+  --ink: #20241d;
+  --muted: #5f695a;
+  --faint: #8a907e;
+  --line: #ddd8c7;
+  --line-strong: #c3bda6;
+  --accent: #2f5d47;
+  --accent-strong: #244a38;
+  --accent-ink: #f2efe4;
+  --console-bg: #18211b;
+  --console-ink: #eee9d6;
+  --console-dim: #93a08e;
+  --console-acc: #9fd3ae;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --paper: #131712;
+    --surface: #1b2118;
+    --ink: #ece7d7;
+    --muted: #a8b09e;
+    --faint: #757e6a;
+    --line: #2e3627;
+    --line-strong: #47513c;
+    --accent: #7db894;
+    --accent-strong: #9ccdae;
+    --accent-ink: #10190f;
+    --console-bg: #0d110c;
+    --console-ink: #e6e1cd;
+    --console-dim: #8f9a86;
+    --console-acc: #9fd3ae;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #131712;
+  --surface: #1b2118;
+  --ink: #ece7d7;
+  --muted: #a8b09e;
+  --faint: #757e6a;
+  --line: #2e3627;
+  --line-strong: #47513c;
+  --accent: #7db894;
+  --accent-strong: #9ccdae;
+  --accent-ink: #10190f;
+  --console-bg: #0d110c;
+  --console-ink: #e6e1cd;
+  --console-dim: #8f9a86;
+  --console-acc: #9fd3ae;
+}
+
+/* ---------- Base ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 400 1rem/1.65 "Karla", "Avenir Next", "Segoe UI", sans-serif;
+  overflow-x: clip;
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background: var(--accent); color: var(--accent-ink); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+a { color: var(--accent); text-underline-offset: 3px; }
+img, svg { max-width: 100%; }
+.wrap { width: min(1120px, 100% - 2.5rem); margin-inline: auto; }
+.sec { padding-block: clamp(3.2rem, 7vw, 5.6rem); }
+.band { background: var(--surface); border-block: 1px solid var(--line); }
+.skip {
+  position: absolute; left: -999px; top: 0; z-index: 99;
+  background: var(--accent); color: var(--accent-ink);
+  padding: .6rem 1.1rem; border-radius: 0 0 10px 0; text-decoration: none; font-weight: 600;
+}
+.skip:focus { left: 0; }
+.mono { font-family: "IBM Plex Mono", "SF Mono", ui-monospace, Menlo, monospace; }
+.fine { font-size: .8rem; color: var(--muted); }
+
+/* ---------- Type ---------- */
+h1, h2, h3, .serif { font-family: "Fraunces", "Iowan Old Style", Georgia, serif; }
+h1 {
+  font-size: clamp(2.55rem, 1.55rem + 4.4vw, 4.4rem);
+  line-height: 1.03; font-weight: 560; letter-spacing: -0.015em;
+  margin: 0 0 1.3rem; max-width: 13ch;
+}
+h1 em { font-style: italic; color: var(--accent); }
+h2 {
+  font-size: clamp(1.85rem, 1.3rem + 2.4vw, 2.9rem);
+  line-height: 1.12; font-weight: 560; letter-spacing: -0.01em;
+  margin: 0 0 1.1rem; max-width: 22ch;
+}
+h3 { font-weight: 600; }
+.kicker {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: .72rem; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--accent); margin: 0 0 1rem;
+}
+.lede { font-size: clamp(1.05rem, .98rem + .35vw, 1.2rem); line-height: 1.6; color: var(--ink); max-width: 54ch; }
+.sec-lede { color: var(--muted); max-width: 62ch; margin: 0 0 2.4rem; }
+
+/* ---------- Chapter heads ---------- */
+.chapter-head { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.3rem; }
+.chapter-head .ck {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: .72rem; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--accent);
+}
+.chapter-head .ck-r { color: var(--faint); text-align: right; }
+.chapter-head .rule { flex: 1 1 1.5rem; min-width: 1.5rem; height: 1px; background: var(--line-strong); }
+
+/* ---------- Header ---------- */
+.site-head {
+  position: sticky; top: 0; z-index: 50;
+  background: color-mix(in srgb, var(--paper) 88%, transparent);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+.head-in { display: flex; align-items: center; gap: 1rem; min-height: 4rem; }
+.brand {
+  display: inline-flex; align-items: center; gap: .55rem;
+  font-family: "Fraunces", Georgia, serif; font-weight: 600; font-size: 1.18rem;
+  color: var(--ink); text-decoration: none; letter-spacing: -0.01em;
+}
+.brand svg { width: 24px; height: 24px; color: var(--accent); flex: none; }
+.site-nav { display: flex; align-items: center; gap: 1.4rem; margin-left: auto; }
+.site-nav a {
+  color: var(--muted); text-decoration: none; font-size: .94rem; font-weight: 500;
+}
+.site-nav a:hover { color: var(--accent); }
+.site-nav .nav-gh {
+  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: .8rem;
+  color: var(--accent); border: 1px solid var(--line-strong);
+  padding: .35rem .8rem; border-radius: 999px;
+}
+.site-nav .nav-gh:hover { border-color: var(--accent); }
+.head-tools { display: flex; align-items: center; gap: .6rem; margin-left: .4rem; }
+.site-nav ~ .head-tools { margin-left: 0; }
+.theme-toggle, .nav-toggle {
+  display: grid; place-items: center; width: 2.4rem; height: 2.4rem;
+  border: 1px solid var(--line-strong); border-radius: 999px;
+  background: transparent; color: var(--ink); cursor: pointer;
+}
+.theme-toggle:hover, .nav-toggle:hover { border-color: var(--accent); color: var(--accent); }
+.theme-toggle svg { width: 17px; height: 17px; }
+.nav-toggle { display: none; }
+.nav-toggle .bars { width: 16px; height: 10px; position: relative; }
+.nav-toggle .bars::before, .nav-toggle .bars::after {
+  content: ""; position: absolute; left: 0; right: 0; height: 2px;
+  background: currentColor; border-radius: 2px;
+}
+.nav-toggle .bars::before { top: 0; }
+.nav-toggle .bars::after { bottom: 0; }
+@media (max-width: 880px) {
+  .site-nav {
+    display: none; position: absolute; top: 100%; left: 0; right: 0;
+    flex-direction: column; align-items: stretch; gap: 0;
+    background: var(--surface); border-bottom: 1px solid var(--line);
+    padding: .6rem 1.25rem 1.2rem;
+  }
+  .site-nav.open { display: flex; }
+  .site-nav a { padding: .75rem .1rem; border-top: 1px solid var(--line); font-size: 1rem; }
+  .site-nav a:first-child { border-top: 0; }
+  .site-nav .nav-gh { align-self: flex-start; margin-top: .8rem; }
+  .nav-toggle { display: grid; }
+  .head-tools { margin-left: auto; }
+  .site-nav ~ .head-tools { margin-left: auto; }
+}
+
+/* ---------- Buttons ---------- */
+.btn {
+  display: inline-block; padding: .85rem 1.5rem; border-radius: 999px;
+  font-weight: 700; font-size: .98rem; text-decoration: none;
+  border: 1px solid transparent; transition: background .15s ease, border-color .15s ease, color .15s ease;
+}
+.btn-solid { background: var(--accent); color: var(--accent-ink); }
+.btn-solid:hover { background: var(--accent-strong); }
+.btn-line { border-color: var(--line-strong); color: var(--ink); background: transparent; }
+.btn-line:hover { border-color: var(--accent); color: var(--accent); }
+.cta-row { display: flex; flex-wrap: wrap; gap: .8rem; margin: 1.8rem 0 1rem; }
+.micro {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: .74rem; letter-spacing: .04em; color: var(--muted); margin: 0;
+}
+
+/* ---------- Hero ---------- */
+.hero { padding-block: clamp(3rem, 7vw, 5.5rem) 0; }
+.hero-grid { display: grid; gap: 2.5rem; align-items: center; }
+@media (min-width: 900px) { .hero-grid { grid-template-columns: .92fr 1.08fr; gap: 3rem; } }
+.hero-art { margin: 0; color: var(--ink); }
+.hero-art figcaption {
+  margin-top: .9rem; font-size: .84rem; color: var(--muted);
+  font-family: "Fraunces", Georgia, serif; font-style: italic; text-align: center;
+}
+.hero-photo {
+  position: relative; border-radius: 20px; overflow: hidden;
+  aspect-ratio: 4 / 3; isolation: isolate; background: var(--surface);
+}
+@media (min-width: 900px) { .hero-photo { aspect-ratio: 16 / 11.5; } }
+.hero-photo img {
+  width: 100%; height: 100%; object-fit: cover; object-position: 60% 55%;
+  display: block; animation: heroZoom 20s ease-in-out infinite alternate;
+}
+@keyframes heroZoom { from { transform: scale(1); } to { transform: scale(1.035); } }
+@media (prefers-reduced-motion: reduce) { .hero-photo img { animation: none; } }
+.hero-photo::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(to top, color-mix(in srgb, var(--paper) 45%, transparent), transparent 38%);
+}
+.hero-cloud {
+  position: absolute; top: 6%; right: 6%; width: 13%; aspect-ratio: 4 / 3;
+  color: color-mix(in srgb, var(--accent-ink) 88%, var(--accent) 12%);
+  opacity: .8; z-index: 1; filter: drop-shadow(0 1px 2px rgba(0,0,0,.35));
+}
+.hero-cloud svg { width: 100%; height: 100%; }
+.console {
+  margin: clamp(2.5rem, 6vw, 4.5rem) 0 0;
+  background: var(--console-bg); color: var(--console-ink);
+  border: 1px solid var(--line); border-radius: 14px; overflow: hidden;
+}
+.console-bar {
+  display: flex; align-items: center; gap: .45rem;
+  padding: .7rem 1rem; border-bottom: 1px solid color-mix(in srgb, var(--console-ink) 16%, transparent);
+}
+.console-bar i {
+  width: 9px; height: 9px; border-radius: 50%;
+  background: var(--console-dim); opacity: .55;
+}
+.console-bar b {
+  margin-left: auto; font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-weight: 500; font-size: .7rem; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--console-dim);
+}
+.console pre {
+  margin: 0; padding: 1.15rem 1.25rem; overflow-x: auto;
+  font: 400 .82rem/1.75 "IBM Plex Mono", ui-monospace, monospace;
+  color: var(--console-ink);
+}
+.console pre .c-dim { color: var(--console-dim); }
+.console pre .c-acc { color: var(--console-acc); }
+.console-note {
+  margin: 0; padding: .9rem 1.25rem;
+  border-top: 1px solid color-mix(in srgb, var(--console-ink) 16%, transparent);
+  color: var(--console-dim); font-size: .84rem;
+}
+.console-note code { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: .78rem; color: var(--console-acc); }
+
+/* ---------- Steps ---------- */
+.steps { display: grid; gap: 2.2rem; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin-top: 2.6rem; }
+.step { border-top: 2px solid var(--ink); padding-top: 1.1rem; }
+.step .num {
+  font-family: "Fraunces", Georgia, serif; font-style: italic;
+  font-size: 2.4rem; line-height: 1; color: var(--accent); display: block; margin-bottom: .7rem;
+}
+.step h3 { margin: 0 0 .5rem; font-size: 1.22rem; }
+.step p { margin: 0; color: var(--muted); font-size: .95rem; }
+.step p a { font-weight: 600; }
+
+/* ---------- Manifesto / never ---------- */
+.statement {
+  font-family: "Fraunces", Georgia, serif;
+  font-size: clamp(1.7rem, 1.2rem + 2.2vw, 2.6rem);
+  line-height: 1.25; font-weight: 480; max-width: 26ch; margin: 0 0 2.6rem;
+}
+.statement em { font-style: italic; color: var(--accent); }
+.nevers { display: grid; gap: 0 3rem; grid-template-columns: 1fr; margin: 0 0 3rem; padding: 0; list-style: none; }
+@media (min-width: 720px) { .nevers { grid-template-columns: 1fr 1fr; } }
+.nevers li {
+  padding: 1.05rem 0 1.05rem 1.9rem; position: relative;
+  border-top: 1px dashed var(--line-strong); font-size: .98rem;
+}
+.nevers li::before {
+  content: ""; position: absolute; left: .2rem; top: 1.55rem;
+  width: .9rem; height: 2px; background: var(--accent);
+}
+.zero { margin: 0; display: flex; align-items: baseline; gap: 1.1rem; flex-wrap: wrap; }
+.zero strong {
+  font-family: "Fraunces", Georgia, serif; font-weight: 600;
+  font-size: clamp(4.2rem, 12vw, 8rem); line-height: .9; color: var(--accent);
+}
+.zero span {
+  font-family: "Fraunces", Georgia, serif; font-size: clamp(1.25rem, 2.6vw, 1.8rem);
+  line-height: 1.3; max-width: 26ch;
+}
+.zero-note { color: var(--muted); max-width: 56ch; margin: 1.2rem 0 0; }
+
+/* ---------- Said two ways ---------- */
+.dialects { border: 1px solid var(--line); border-radius: 16px; background: var(--surface); overflow: hidden; }
+.d-head { display: none; }
+.d-row { border-top: 1px solid var(--line); }
+.d-row:first-of-type { border-top: 0; }
+.d-plain, .d-spec { padding: 1.25rem 1.4rem; }
+.d-plain { font-size: .98rem; }
+.d-plain b { font-family: "Fraunces", Georgia, serif; font-size: 1.08rem; }
+.d-spec { background: color-mix(in srgb, var(--paper) 62%, var(--surface)); }
+.d-spec p {
+  margin: 0; font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: .8rem; line-height: 1.7; color: var(--muted);
+}
+.d-plain::before, .d-spec::before {
+  display: block; font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: .68rem; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--faint); margin-bottom: .55rem;
+}
+.d-plain::before { content: "For the family — plain words"; }
+.d-spec::before { content: "For the homelab — spec words"; }
+@media (min-width: 760px) {
+  .d-head, .d-row { display: grid; grid-template-columns: 1.05fr 1fr; }
+  .d-head span {
+    padding: .85rem 1.4rem; font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: .7rem; letter-spacing: .16em; text-transform: uppercase; color: var(--muted);
+  }
+  .d-head span:last-child { border-left: 1px solid var(--line); }
+  .d-row { border-top: 1px solid var(--line); }
+  .d-plain::before, .d-spec::before { content: none; }
+  .d-spec { border-left: 1px solid var(--line); }
+}
+.oss-strip {
+  margin-top: 1.6rem; border: 1px dashed var(--line-strong); border-radius: 16px;
+  padding: clamp(1.4rem, 3.5vw, 2.2rem); display: grid; gap: .6rem;
+}
+.oss-strip p { margin: 0; }
+.oss-strip .oss-big { font-family: "Fraunces", Georgia, serif; font-size: clamp(1.3rem, 2.4vw, 1.7rem); }
+.oss-strip .oss-big strong { color: var(--accent); }
+.oss-strip .mono-link {
+  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: .86rem;
+  font-weight: 500; justify-self: start; margin-top: .4rem;
+}
+
+/* ---------- Pricing ---------- */
+.tiers { display: grid; gap: 1.2rem; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); align-items: stretch; }
+.tier {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 16px;
+  padding: 1.6rem; display: flex; flex-direction: column;
+}
+.tier-lead { border: 2px solid var(--accent); }
+.ledger-no {
+  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: .68rem;
+  letter-spacing: .16em; text-transform: uppercase; color: var(--faint);
+}
+.tier header { display: flex; flex-direction: column; align-items: flex-start; gap: .5rem; }
+.tier h3 { margin: 0; font-size: 1.5rem; }
+.flag {
+  display: inline-block; font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: .66rem; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--accent); border: 1px solid var(--accent); border-radius: 999px;
+  padding: .3rem .7rem;
+}
+.price {
+  display: flex; align-items: baseline; gap: .65rem; flex-wrap: wrap;
+  margin: 1.1rem 0 1.1rem; padding-bottom: 1.1rem;
+  border-bottom: 1px dashed var(--line-strong);
+}
+.amount { font-family: "Fraunces", Georgia, serif; font-size: 2.5rem; font-weight: 600; line-height: 1; }
+.was { color: var(--muted); text-decoration: line-through; text-decoration-thickness: 2px; font-size: 1.05rem; }
+.per { color: var(--muted); font-size: .82rem; }
+.tier ul { list-style: none; margin: 0 0 1.2rem; padding: 0; flex: 1; }
+.tier li { position: relative; padding: .42rem 0 .42rem 1.7rem; font-size: .95rem; }
+.tier li::before {
+  content: "✓"; position: absolute; left: .15rem; top: .42rem;
+  color: var(--accent); font-weight: 700;
+}
+.tier-note {
+  margin: 0; font-size: .85rem; line-height: 1.6; color: var(--muted);
+  border-top: 1px dashed var(--line-strong); padding-top: 1.05rem;
+}
+.tier-note strong { color: var(--ink); }
+.after-tiers { margin: 2.2rem 0 0; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; color: var(--muted); }
+.cmp-title { font-size: clamp(1.4rem, 2.6vw, 1.9rem); margin: 3.6rem 0 .6rem; }
+.cmp-lede { color: var(--muted); margin: 0 0 1.4rem; max-width: 60ch; }
+.tablewrap {
+  overflow-x: auto; border: 1px solid var(--line); border-radius: 14px;
+  background: var(--surface);
+}
+.cmp { width: 100%; min-width: 640px; border-collapse: collapse; font-size: .93rem; }
+.cmp th, .cmp td { padding: .95rem 1.15rem; text-align: left; border-top: 1px solid var(--line); vertical-align: top; }
+.cmp thead th {
+  border-top: 0; font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: .72rem; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--muted); font-weight: 500;
+}
+.cmp thead th.us { color: var(--accent); }
+.cmp tbody th {
+  font-family: "Fraunces", Georgia, serif; font-weight: 600;
+  font-size: 1rem; color: var(--ink); white-space: nowrap;
+}
+.cmp td.us {
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  font-weight: 600; color: var(--ink);
+}
+
+/* ---------- Letter ---------- */
+.letter {
+  background: var(--surface); border: 1px solid var(--line);
+  border-left: 3px solid var(--accent); border-radius: 14px;
+  padding: clamp(1.5rem, 4vw, 2.8rem); max-width: 48rem; margin-top: 2rem;
+}
+.letter p {
+  font-family: "Fraunces", Georgia, serif; font-weight: 400;
+  font-size: clamp(1.02rem, .96rem + .3vw, 1.14rem); line-height: 1.72;
+  margin: 0 0 1.2rem;
+}
+.letter p:last-child { margin-bottom: 0; }
+.letter .drop { color: var(--muted); font-size: .9rem; font-family: "Karla", sans-serif; margin-bottom: 1.6rem; }
+.sig { font-style: italic; font-size: 1.35rem; color: var(--accent); }
+
+/* ---------- Maker ---------- */
+.maker-grid { display: grid; gap: 2.5rem; margin-top: 2rem; }
+@media (min-width: 900px) { .maker-grid { grid-template-columns: 1.15fr .85fr; gap: 3.5rem; } }
+.maker-grid p { margin: 0 0 1.2rem; max-width: 56ch; }
+.sig-big { font-family: "Fraunces", Georgia, serif; font-style: italic; font-size: 1.7rem; margin-top: 1.8rem; }
+.sig-big span {
+  display: block; font-family: "IBM Plex Mono", ui-monospace, monospace; font-style: normal;
+  font-size: .7rem; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--muted); margin-top: .5rem;
+}
+.pledge {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 16px;
+  padding: clamp(1.6rem, 3.5vw, 2.4rem); align-self: start;
+}
+.pledge-num {
+  font-family: "Fraunces", Georgia, serif; font-weight: 600;
+  font-size: clamp(3.6rem, 7vw, 5.2rem); line-height: 1;
+  color: var(--accent); margin: 0 0 1.1rem;
+}
+.pledge p { margin: 0 0 1rem; }
+.pledge p:last-child { margin-bottom: 0; font-size: .9rem; color: var(--muted); }
+
+/* ---------- Footer ---------- */
+footer { border-top: 1px solid var(--line); background: var(--surface); margin-top: 2rem; }
+.foot-grid { display: grid; gap: 2.5rem; padding-block: 3.2rem; grid-template-columns: 1fr; }
+@media (min-width: 780px) { .foot-grid { grid-template-columns: 1.1fr .7fr 1.2fr; gap: 3rem; } }
+footer h4 {
+  font-family: "IBM Plex Mono", ui-monospace, monospace; font-weight: 500;
+  font-size: .72rem; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--faint); margin: 0 0 1rem;
+}
+.foot-brand p { color: var(--muted); font-size: .92rem; margin: 1rem 0 0; max-width: 34ch; }
+footer nav a { display: block; padding: .28rem 0; color: var(--ink); text-decoration: none; font-size: .95rem; }
+footer nav a:hover { color: var(--accent); }
+.foot-app { font-size: .86rem; color: var(--muted); margin: 0 0 1.1rem; line-height: 1.6; }
+.foot-app a { color: var(--ink); font-weight: 600; text-decoration: none; }
+.foot-app a:hover { color: var(--accent); }
+.foot-app .fp a { font-weight: 500; color: var(--muted); text-decoration: underline; text-decoration-color: var(--line-strong); }
+.foot-app .fp a:hover { color: var(--accent); text-decoration-color: var(--accent); }
+.foot-base {
+  display: flex; flex-wrap: wrap; gap: .4rem 2.5rem; justify-content: space-between;
+  border-top: 1px solid var(--line); padding-block: 1.3rem 1.6rem;
+  font-size: .8rem; color: var(--muted);
+}
+.foot-base p { margin: 0; }
+
+/* ---------- Other apps page ---------- */
+.apps-hero { padding-block: clamp(2.6rem, 6vw, 4.4rem) 0; }
+.apps-hero .kicker { margin-bottom: 1rem; }
+.apps-hero p.lede { margin-top: .6rem; }
+.back-link {
+  display: inline-flex; align-items: center; gap: .4rem; margin-bottom: 1.6rem;
+  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: .82rem;
+  color: var(--muted); text-decoration: none;
+}
+.back-link:hover { color: var(--accent); }
+.apps-grid { display: grid; gap: 1.4rem; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); margin-top: 2.4rem; }
+.app-card {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 16px;
+  padding: 1.7rem; display: flex; flex-direction: column;
+}
+.app-card h3 { margin: 0 0 .6rem; font-size: 1.35rem; }
+.app-card p.desc { margin: 0 0 1.3rem; color: var(--muted); font-size: .95rem; flex: 1; }
+.app-card .tags { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1.3rem; }
+.app-card .tags span {
+  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: .68rem;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--muted);
+  border: 1px solid var(--line-strong); border-radius: 999px; padding: .25rem .65rem;
+}
+.app-card .app-links { display: flex; flex-wrap: wrap; gap: 1rem; padding-top: 1.1rem; border-top: 1px dashed var(--line-strong); }
+.app-card .app-links a { font-size: .88rem; font-weight: 600; text-decoration: none; }
+.app-card .app-links a.sub { font-weight: 500; color: var(--muted); text-decoration: underline; text-decoration-color: var(--line-strong); }
+.app-card .app-links a.sub:hover { color: var(--accent); text-decoration-color: var(--accent); }
+</style><a class="skip" href="#main">Skip to content</a>
+
+<header class="site-head">
+  <div class="wrap head-in">
+    <a class="brand" href="/" aria-label="AiHomeCloud home">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M3.5 11.5 12 4l8.5 7.5"/><path d="M6 10v10h12V10"/><path d="M9.5 15.5h5"/>
+      </svg>
+      AiHomeCloud
+    </a>
+    <nav class="site-nav" id="siteNav" aria-label="Main">
+      <a href="/#how">How it works</a>
+      <a href="/#never">Never a cloud</a>
+      <a href="/#security">Security</a>
+      <a href="/#pricing">Pricing</a>
+      <a href="/#maker">The maker</a>
+      <a class="nav-gh" href="https://github.com/chaitraparas/aihomecloud-server">GitHub ↗</a>
+    </nav>
+    <div class="head-tools">
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch color theme" aria-pressed="false">
+        <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 13.5A8 8 0 1 1 10.5 4a6.5 6.5 0 0 0 9.5 9.5z"/></svg>
+        <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" hidden><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5 5l1.7 1.7M17.3 17.3 19 19M19 5l-1.7 1.7M6.7 17.3 5 19"/></svg>
+      </button>
+      <button class="nav-toggle" id="navToggle" type="button" aria-expanded="false" aria-controls="siteNav" aria-label="Toggle menu"><span class="bars"></span></button>
+    </div>
+  </div>
+</header>
+
+
+<main id="main">
+<section class="sec apps-hero">
+  <div class="wrap">
+    <a class="back-link" href="/">&larr; Back to AiHomeCloud</a>
+    <p class="kicker">Also by Paras</p>
+    <h1>Other things I've built.</h1>
+    <p class="lede">AiHomeCloud is the main project, but three other independent apps came out of
+    solving my own problems first. Same philosophy on all of them: private by default, no
+    subscription traps, built by one person who actually uses them.</p>
+
+    <div class="apps-grid">
+      <article class="app-card" id="finpath">
+        <h3>FinPath</h3>
+        <p class="desc">A FIRE (financial independence) and net-worth tracking app. Model SIP
+        projections, plan an early-retirement date, and track your net worth over time — entirely
+        on-device. No account, no cloud, no ads.</p>
+        <div class="tags"><span>Finance</span><span>FIRE</span><span>Android</span></div>
+        <div class="app-links">
+          <a href="https://play.google.com/store/apps/details?id=com.aihomecloud.finpath">Play Store &rarr;</a>
+          <a class="sub" href="/finpath/privacy">Privacy</a>
+          <a class="sub" href="/finpath/support">Support</a>
+        </div>
+      </article>
+
+      <article class="app-card" id="ahcplay">
+        <h3>AHC Player</h3>
+        <p class="desc">A private, Netflix-style media player for Android TV and Fire TV. Streams
+        from an AiHomeCloud server, SMB shares, or local/USB storage — with posters, backdrops,
+        and continue-watching, all on your own network.</p>
+        <div class="tags"><span>Media</span><span>Android TV</span><span>Self-hosted</span></div>
+        <div class="app-links">
+          <a class="sub" href="/ahcplay/privacy">Privacy</a>
+          <a class="sub" href="/ahcplay/support">Support</a>
+        </div>
+      </article>
+
+      <article class="app-card" id="watertank">
+        <h3>WaterTank</h3>
+        <p class="desc">Automates a home water pump over Bluetooth via an ESP32. Detects when
+        supply arrives, starts the motor, and stops it when the tank is full — no Wi-Fi
+        required.</p>
+        <div class="tags"><span>IoT</span><span>Home</span><span>Android</span></div>
+        <div class="app-links">
+          <a href="https://play.google.com/store/apps/details?id=com.aihomecloud.watertank">Play Store &rarr;</a>
+          <a class="sub" href="/watertank/privacy">Privacy</a>
+          <a class="sub" href="/watertank/support">Support</a>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ======================= FOOTER ======================= -->
+<footer>
+  <div class="wrap foot-grid">
+    <div class="foot-brand">
+      <a class="brand" href="/" aria-label="AiHomeCloud home">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M3.5 11.5 12 4l8.5 7.5"/><path d="M6 10v10h12V10"/><path d="M9.5 15.5h5"/>
+        </svg>
+        AiHomeCloud
+      </a>
+      <p>A private home cloud. Your files never leave your hardware. Server is open source, AGPL-3.0.</p>
+      <p class="fine">This page sets no cookies and loads no trackers.</p>
+    </div>
+    <nav aria-label="AiHomeCloud links">
+      <h4>AiHomeCloud</h4>
+      <a href="https://play.google.com/store/apps/details?id=com.aihomecloud.app">Get the app on Google Play</a>
+      <a href="https://github.com/chaitraparas/aihomecloud-server">Server source (AGPL-3.0)</a>
+      <a href="/#pricing">Pricing</a>
+      <a href="/aihomecloud/privacy">Privacy policy</a>
+      <a href="/aihomecloud/support">Support</a>
+    </nav>
+    <div>
+      <h4>Also by Paras</h4>
+      <p class="foot-app"><a href="#finpath">FinPath</a> — a FIRE &amp; net-worth tracking app for Android.<br><span class="fp"><a href="/finpath/privacy">Privacy</a> · <a href="/finpath/support">Support</a></span></p>
+      <p class="foot-app"><a href="#ahcplay">AHC Player</a> — a private, Netflix-style media player for Android TV / Fire TV; streams from an AiHomeCloud server, SMB shares, or local storage.<br><span class="fp"><a href="/ahcplay/privacy">Privacy</a> · <a href="/ahcplay/support">Support</a></span></p>
+      <p class="foot-app"><a href="#watertank">WaterTank</a> — Bluetooth ESP32 home water-pump automation.<br><span class="fp"><a href="/watertank/privacy">Privacy</a> · <a href="/watertank/support">Support</a></span></p>
+    </div>
+  </div>
+  <div class="wrap foot-base">
+    <p>© 2026 AiHomeCloud · Made by one person in India</p>
+    <p>51% of profits → food &amp; education for children in rural India</p>
+  </div>
+</footer>
