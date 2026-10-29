@@ -464,7 +464,7 @@ const cv=document.getElementById('scope'),cx=cv.getContext('2d');
 const dot=document.getElementById('lockdot'),txt=document.getElementById('locktxt');
 let W,H,dpr;
 function size(){dpr=Math.min(devicePixelRatio||1,2);W=cv.clientWidth;H=cv.clientHeight;cv.width=W*dpr;cv.height=H*dpr;cx.setTransform(dpr,0,0,dpr,0,0)}
-size();addEventListener('resize',size);
+size();addEventListener('resize',()=>{size();if(RM)frame(0)});
 const CYCLE=9; // seconds per lock acquisition
 function frame(now){
   const t=RM?CYCLE:((now/1000)%(CYCLE+3));
@@ -472,8 +472,9 @@ function frame(now){
   // damped phase error + Vctrl settle (2nd-order)
   const z=0.55,wn=7.5,s=lockT*1.25;
   const env=Math.exp(-z*wn*s);
-  const perr=env*Math.cos(wn*Math.sqrt(1-z*z)*s);
   const vctrl=1-env*(Math.cos(wn*.83*s)+z/.83*Math.sin(wn*.83*s));
+  // VCO output frequency follows Vctrl: starts slow, overshoots, settles at exactly 8 x REF
+  const ratio=Math.max(.2,.3+.7*vctrl);
   cx.clearRect(0,0,W,H);
   // grid
   cx.strokeStyle='rgba(42,53,80,.35)';cx.lineWidth=1;
@@ -481,12 +482,12 @@ function frame(now){
   for(let x=(-((now/60)%g));x<W;x+=g){cx.beginPath();cx.moveTo(x,0);cx.lineTo(x,H);cx.stroke()}
   for(let y=0;y<H;y+=g){cx.beginPath();cx.moveTo(0,y);cx.lineTo(W,y);cx.stroke()}
   const shift=RM?0:now/22;
-  const per=Math.max(110,W/9);
-  const sq=(y0,amp,ph,col,glow)=>{
+  const per=Math.max(220,W/5);
+  const sq=(y0,amp,p,col,glow)=>{
     cx.beginPath();cx.strokeStyle=col;cx.lineWidth=2;cx.shadowColor=col;cx.shadowBlur=glow;
     let prev=null;
     for(let x=0;x<=W;x+=2){
-      const v=(((x+shift+ph)%per)+per)%per<per/2?1:0;
+      const v=(((x+shift)%p)+p)%p<p/2?1:0;
       const y=y0-v*amp;
       if(prev===null)cx.moveTo(x,y);else if(prev!==v){cx.lineTo(x,y0-prev*amp);cx.lineTo(x,y)}else cx.lineTo(x,y);
       prev=v;
@@ -494,8 +495,8 @@ function frame(now){
     cx.stroke();cx.shadowBlur=0;
   };
   const top=H*.72;
-  sq(top,26,0,'rgba(255,200,87,.55)',8);
-  sq(top+56,26,perr*per*.45,'rgba(92,225,230,.75)',14);
+  sq(top,26,per,'rgba(255,200,87,.55)',8);
+  sq(top+56,26,per/8/ratio,'rgba(92,225,230,.75)',14);
   // Vctrl trace across width as time
   cx.beginPath();cx.strokeStyle='rgba(255,122,89,.8)';cx.lineWidth=2;cx.shadowColor='#ff7a59';cx.shadowBlur=16;
   const n=Math.floor(W*lockT);
@@ -506,10 +507,10 @@ function frame(now){
   if(n>0){const ss=(n/W)*1.25,e=Math.exp(-z*wn*ss),v=1-e*(Math.cos(wn*.83*ss)+z/.83*Math.sin(wn*.83*ss));
     cx.fillStyle='#ffb199';cx.beginPath();cx.arc(n,H*.48-v*H*.16,4,0,7);cx.fill()}
   cx.font='11px JetBrains Mono, monospace';cx.fillStyle='rgba(139,148,170,.7)';
-  cx.fillText('REF  12.5 MHz',12,top-34);cx.fillText('FB = VCO / 8',12,top+22);cx.fillText('Vctrl',12,H*.48-H*.16-10);
-  const locked=Math.abs(perr)<.03&&lockT>.6;
+  const locked=Math.abs(vctrl-1)<.015&&lockT>.5;
+  cx.fillText('REF  12.5 MHz',12,top-34);cx.fillText(locked?'OUT = 8 × REF  100 MHz':'OUT  '+(100*ratio).toFixed(1)+' MHz',12,top+22);cx.fillText('Vctrl',12,H*.48-H*.16-10);
   dot.classList.toggle('on',locked);
-  txt.textContent=locked?'locked · 100.000 MHz':'acquiring lock… Δφ '+(perr*180).toFixed(1)+'°';
+  txt.textContent=locked?'locked · 100.000 MHz':'acquiring lock… out '+(100*ratio).toFixed(1)+' MHz';
   if(!RM)requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
