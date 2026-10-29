@@ -1,0 +1,604 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>pruthapll: 36 Nights</title>
+<meta name="description" content="How a SKY130 PLL went from a 2020 internship schematic to a 0.0575 mm² signed-off layout in 36 days: AI crew, thousands of simulations, and the search for the sweet spot.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#07090f; --bg2:#0c1019; --panel:#0f1420; --line:#1c2435; --line2:#2a3550;
+  --ink:#eef1f7; --mute:#8b94aa; --dim:#5a6378;
+  --coral:#ff7a59; --coral2:#ffb199; --cyan:#5ce1e6; --amber:#ffc857; --red:#ff4d6d; --ok:#7ee0a1;
+  --display:'Bricolage Grotesque',system-ui,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:var(--display);font-size:17px;line-height:1.55;overflow-x:hidden;
+  padding-left:max(16px,env(safe-area-inset-left));padding-right:max(16px,env(safe-area-inset-right))}
+a{color:var(--cyan)}
+.wrap{max-width:1080px;margin:0 auto}
+.mono{font-family:var(--mono)}
+.k{font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--coral)}
+h1,h2,h3{font-weight:800;letter-spacing:-.02em;line-height:1.02}
+h2{font-size:clamp(34px,6vw,64px);margin:.25em 0 .35em}
+h3{font-size:22px;letter-spacing:-.01em}
+p.lede{font-size:clamp(18px,2.2vw,21px);color:#c9cfdc;max-width:62ch}
+.mute{color:var(--mute)}
+section{padding:120px 0;position:relative}
+.grad{background:linear-gradient(92deg,var(--coral) 0%,var(--amber) 45%,var(--cyan) 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* nav */
+.sitebar{position:sticky;top:0;z-index:20;display:flex;gap:10px;align-items:center;flex-wrap:wrap;
+  font-family:var(--mono);font-size:12px;padding:12px 0;color:var(--mute);
+  background:linear-gradient(var(--bg) 60%,transparent)}
+.sitebar a{color:var(--mute);text-decoration:none}.sitebar a:hover{color:var(--ink)}
+.sitebar .sep{color:var(--dim)}
+.sitebar .here{color:var(--ink)}
+
+/* hero */
+.hero{min-height:100svh;display:flex;flex-direction:column;justify-content:center;padding:40px 0 80px;position:relative}
+#scope{position:absolute;inset:0;width:100%;height:100%;z-index:0;opacity:.95}
+.hero .wrap{position:relative;z-index:1;width:100%}
+.hero h1{font-size:clamp(46px,10vw,128px);margin:.15em 0 .2em}
+.hero h1 .thin{font-weight:400;color:var(--mute)}
+.lockpill{display:inline-flex;gap:10px;align-items:center;font-family:var(--mono);font-size:13px;
+  border:1px solid var(--line2);border-radius:99px;padding:6px 14px;background:rgba(12,16,25,.7);backdrop-filter:blur(6px)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--red);box-shadow:0 0 12px var(--red);transition:background .3s,box-shadow .3s}
+.dot.on{background:var(--ok);box-shadow:0 0 14px var(--ok)}
+.herostats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);
+  border-radius:14px;overflow:hidden;margin-top:44px;max-width:900px}
+.herostats div{background:rgba(9,12,19,.82);backdrop-filter:blur(8px);padding:18px 18px 16px}
+.herostats b{display:block;font-size:clamp(26px,4vw,40px);font-weight:800;letter-spacing:-.02em}
+.herostats span{font-family:var(--mono);font-size:11px;color:var(--mute);text-transform:uppercase;letter-spacing:.1em}
+.scrollcue{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:11px;color:var(--dim);z-index:1;letter-spacing:.2em}
+
+/* timeline */
+.tl{position:relative;margin-top:48px;border-left:1px solid var(--line2);padding-left:28px}
+.tl .ev{position:relative;padding:0 0 38px}
+.tl .ev::before{content:"";position:absolute;left:-34px;top:8px;width:11px;height:11px;border-radius:50%;background:var(--bg);border:2px solid var(--coral)}
+.tl .ev.big::before{background:var(--coral);box-shadow:0 0 18px var(--coral)}
+.tl .ev.bad::before{border-color:var(--red);background:var(--red);box-shadow:0 0 18px var(--red)}
+.tl .when{font-family:var(--mono);font-size:12px;color:var(--amber);letter-spacing:.08em}
+.tl h3{margin:4px 0 6px}
+.tl p{color:#c2c8d6;max-width:64ch}
+.commits{margin-top:56px;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px}
+.commits svg{width:100%;height:auto;display:block}
+
+/* crew */
+.crew{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:40px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:24px;position:relative;overflow:hidden}
+.card .role{font-family:var(--mono);font-size:11px;color:var(--mute);letter-spacing:.12em;text-transform:uppercase}
+.card h3{margin:6px 0 10px;font-size:26px}
+.card ul{padding-left:18px;color:#c2c8d6}
+.card li{margin:4px 0}
+.card .catch{margin-top:14px;border-top:1px dashed var(--line2);padding-top:12px;font-size:14px;color:var(--coral2)}
+.card .catch b{font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--red);display:block;margin-bottom:3px}
+.card::after{content:"";position:absolute;inset:-1px;border-radius:18px;padding:1px;pointer-events:none;
+  background:conic-gradient(from var(--a,0deg),transparent 0 70%,var(--c,var(--coral)) 85%,transparent 100%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:.8}
+.card.claude{--c:var(--coral)} .card.qwen{--c:var(--cyan)} .card.gpt{--c:var(--amber)} .card.ggl{--c:#9aa5ff}
+@property --a{syntax:'<angle>';inherits:false;initial-value:0deg}
+@media (prefers-reduced-motion:no-preference){.card::after{animation:spin 7s linear infinite}}
+@keyframes spin{to{--a:360deg}}
+.motto{margin-top:48px;font-size:clamp(28px,5vw,52px);font-weight:800;letter-spacing:-.02em;text-align:center}
+.motto small{display:block;font-family:var(--mono);font-size:12px;font-weight:400;color:var(--mute);letter-spacing:.14em;margin-top:10px}
+
+/* machine */
+.loop{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin:40px 0}
+.loop div{border:1px solid var(--line2);border-radius:12px;padding:14px 12px;background:var(--bg2);position:relative}
+.loop div b{display:block;font-size:16px}
+.loop div span{font-family:var(--mono);font-size:11px;color:var(--mute)}
+.loop div:not(:last-child)::after{content:"→";position:absolute;right:-11px;top:50%;transform:translateY(-50%);color:var(--coral);font-family:var(--mono);z-index:1}
+@media (prefers-reduced-motion:no-preference){.loop div{animation:pulse 5s infinite}
+ .loop div:nth-child(2){animation-delay:1s}.loop div:nth-child(3){animation-delay:2s}.loop div:nth-child(4){animation-delay:3s}.loop div:nth-child(5){animation-delay:4s}}
+@keyframes pulse{0%,16%{border-color:var(--coral);box-shadow:0 0 24px rgba(255,122,89,.25)}24%,100%{border-color:var(--line2);box-shadow:none}}
+.machine{display:grid;grid-template-columns:1.1fr 1fr;gap:16px}
+.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}
+.stat b{display:block;font-size:clamp(30px,4.5vw,44px);font-weight:800;letter-spacing:-.03em}
+.stat span{font-size:13px;color:var(--mute)}
+.term{background:#05070b;border:1px solid var(--line2);border-radius:14px;overflow:hidden;font-family:var(--mono);font-size:12px;display:flex;flex-direction:column;min-height:340px}
+.term .bar{display:flex;gap:6px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--line);color:var(--mute)}
+.term .bar i{width:9px;height:9px;border-radius:50%;background:var(--line2);display:inline-block}
+.term .bar em{font-style:normal;margin-left:8px}
+.term .body{position:relative;overflow:hidden;flex:1;padding:12px}
+.term .roll{display:flex;flex-direction:column;gap:7px}
+@media (prefers-reduced-motion:no-preference){.term .roll{animation:roll 30s linear infinite}}
+@keyframes roll{to{transform:translateY(-50%)}}
+.term .l{white-space:nowrap;color:#9fb0c8}
+.term .l .p{color:var(--ok)}.term .l .f{color:var(--amber)}.term .l .c{color:var(--cyan)}
+.term .body::after{content:"";position:absolute;inset:auto 0 0 0;height:60px;background:linear-gradient(transparent,#05070b)}
+
+/* charts */
+.chart{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px;margin-top:36px}
+.chart svg{width:100%;height:auto;display:block;overflow:visible}
+.chart .cap{font-size:14px;color:var(--mute);margin-top:12px}
+.legend{display:flex;flex-wrap:wrap;gap:16px;font-family:var(--mono);font-size:12px;color:var(--mute);margin-bottom:8px}
+.legend i{display:inline-block;width:12px;height:3px;vertical-align:middle;margin-right:6px}
+svg text{font-family:var(--mono);fill:var(--mute)}
+.draw{stroke-dasharray:1200}
+.play .draw{animation:draw 2.2s cubic-bezier(.6,.1,.2,1) both}
+@keyframes draw{from{stroke-dashoffset:1200}to{stroke-dashoffset:0}}
+.play .pop{animation:pop .6s cubic-bezier(.3,1.6,.5,1) both}
+@keyframes pop{from{transform:scale(0)}}
+.pop{transform-box:fill-box;transform-origin:center}
+.winner{transform-box:fill-box;transform-origin:center}
+@media (prefers-reduced-motion:no-preference){.winner{animation:beat 1.6s ease-in-out infinite}}
+@keyframes beat{50%{transform:scale(1.9);opacity:.15}}
+.callouts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:16px}
+.callouts div{border-left:2px solid var(--coral);padding:6px 12px;font-size:14px;color:#c2c8d6}
+.callouts div b{display:block;font-family:var(--mono);font-size:12px;color:var(--ink)}
+
+/* shrink */
+.shrink{display:grid;gap:14px;margin-top:40px}
+.srow{display:grid;grid-template-columns:200px 1fr 90px;gap:14px;align-items:center;font-size:14px}
+.srow .lab{color:#c2c8d6}.srow .lab small{display:block;font-family:var(--mono);font-size:11px;color:var(--mute)}
+.srow .track{height:30px;background:var(--bg2);border:1px solid var(--line);border-radius:6px;position:relative;overflow:hidden}
+.srow .fill{position:absolute;inset:0 auto 0 0;border-radius:5px;background:linear-gradient(90deg,var(--coral),var(--amber))}
+.srow .fill.ghost{background:repeating-linear-gradient(45deg,#3a2530 0 6px,#2a1c24 6px 12px)}
+.srow .fill.win{background:linear-gradient(90deg,var(--cyan),#a0f3f5);box-shadow:0 0 24px rgba(92,225,230,.4)}
+.play .srow .fill{animation:grow 1.4s cubic-bezier(.6,.1,.2,1) both}
+@keyframes grow{from{transform:scaleX(0)}}
+.srow .fill{transform-origin:left}
+.srow .v{font-family:var(--mono);text-align:right}
+.contract{position:absolute;top:-4px;bottom:-4px;border-left:2px dashed var(--red)}
+
+/* signoff */
+.sign{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:16px;overflow:hidden;margin-top:36px}
+.sign div{background:var(--panel);padding:20px}
+.sign b{display:block;font-size:28px;font-weight:800;letter-spacing:-.02em}
+.sign span{font-family:var(--mono);font-size:11px;color:var(--mute);text-transform:uppercase;letter-spacing:.08em}
+.sign em{font-style:normal;font-family:var(--mono);font-size:11px;color:var(--ok);display:block;margin-top:4px}
+.honest{margin-top:28px;border:1px solid #4a3a1a;background:#151007;border-radius:14px;padding:18px 20px;color:#e9d9b0;font-size:15px}
+.honest b{color:var(--amber);font-family:var(--mono);font-size:12px;letter-spacing:.12em;display:block;margin-bottom:4px}
+.cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:36px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:14px 22px;border-radius:99px;text-decoration:none;font-weight:600;
+  background:var(--coral);color:#140805;transition:transform .2s}
+.btn:hover{transform:translateY(-2px)}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line2)}
+/* compare */
+.scorebar{display:flex;gap:12px;flex-wrap:wrap;margin:32px 0 18px}
+.scorebar div{flex:1;min-width:120px;background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ok);border-radius:12px;padding:14px 16px}
+.scorebar div:nth-child(2){border-left-color:var(--cyan)}.scorebar div.bad{border-left-color:var(--amber)}
+.scorebar b{display:block;font-size:34px;font-weight:800;line-height:1}
+.scorebar span{font-family:var(--mono);font-size:11px;color:var(--mute);text-transform:uppercase;letter-spacing:.1em}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:16px;background:var(--panel)}
+.cmp{width:100%;border-collapse:collapse;font-size:14px;min-width:680px}
+.cmp th{text-align:left;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);padding:14px 16px;border-bottom:1px solid var(--line2);background:var(--bg2);position:sticky;top:0}
+.cmp th:nth-child(3){color:var(--cyan)}
+.cmp td{padding:12px 16px;border-bottom:1px solid var(--line);vertical-align:top;color:#c2c8d6}
+.cmp td:first-child{color:var(--ink);font-weight:600}
+.cmp td:nth-child(3){color:var(--ink)}
+.cmp td small{display:block;font-family:var(--mono);font-size:11px;color:var(--mute);font-weight:400}
+.cmp tr.grp td{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--coral);background:rgba(255,122,89,.05);padding:8px 16px}
+.cmp tbody tr:not(.grp):hover td{background:rgba(92,225,230,.04)}
+.tag{display:inline-block;font-family:var(--mono);font-size:11px;padding:3px 9px;border-radius:99px;white-space:nowrap}
+.tag.up{background:rgba(126,224,161,.12);color:var(--ok)}
+.tag.new{background:rgba(92,225,230,.12);color:var(--cyan)}
+.tag.dn{background:rgba(255,200,87,.12);color:var(--amber);white-space:normal}
+footer{padding:60px 0 80px;color:var(--dim);font-family:var(--mono);font-size:12px;border-top:1px solid var(--line)}
+
+/* scroll-driven entrance: progressive enhancement only, never hidden at rest */
+@supports (animation-timeline:view()){
+ @media (prefers-reduced-motion:no-preference){
+  .rise{animation:rise linear both;animation-timeline:view();animation-range:entry 0% entry 40%}
+  @keyframes rise{from{transform:translateY(40px)}}
+ }
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+
+@media (max-width:820px){
+  section{padding:80px 0}
+  .herostats,.sign{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .crew,.machine,.callouts{grid-template-columns:1fr}
+  .loop{grid-template-columns:1fr 1fr}
+  .loop div:not(:last-child)::after{display:none}
+  .srow{grid-template-columns:1fr 70px}.srow .lab{grid-column:1/-1}
+  .term{min-height:260px}
+}
+</style>
+</head>
+<body>
+
+<nav class="sitebar wrap" aria-label="Breadcrumb">
+  <a href="/">AiHomeCloud</a><span class="sep">/</span>
+  <a href="/apps.html#silicon">Other things we've built</a><span class="sep">/</span>
+  <a href="/pjsilicon/pruthapll/">pruthapll</a><span class="sep">/</span>
+  <span class="here">the story</span>
+</nav>
+
+<header class="hero">
+  <canvas id="scope" aria-hidden="true"></canvas>
+  <div class="wrap">
+    <span class="lockpill"><span class="dot" id="lockdot"></span><span id="locktxt">acquiring lock…</span></span>
+    <h1>36 nights.<br><span class="grad">One clock.</span><br><span class="thin">Zero shortcuts.</span></h1>
+    <p class="lede">How a 2020 internship schematic became a signed-off 0.0575&nbsp;mm² SkyWater 130&nbsp;nm phase-locked loop. One engineer, a crew of AI models, and thousands of transistor-level simulations running every night, all closing in on one sweet spot.</p>
+    <div class="herostats">
+      <div><b data-count="3339">3,339</b><span>SPICE decks</span></div>
+      <div><b data-count="250">250</b><span>commits</span></div>
+      <div><b data-count="31">31</b><span>experiments</span></div>
+      <div><b>0.0575</b><span>mm² final die</span></div>
+    </div>
+  </div>
+  <div class="scrollcue">SCROLL ↓</div>
+</header>
+
+<main>
+<section id="timeline">
+  <div class="wrap">
+    <div class="k">01 / The arc</div>
+    <h2 class="rise">From a dusty schematic<br>to sign-off.</h2>
+    <p class="lede">A PLL multiplies a clean reference clock. Here it's ×8: 5–12.5&nbsp;MHz in, 40–100&nbsp;MHz out, built from a ring oscillator, a charge pump and a small RC filter. The job is easy to describe. Proving it works at every corner, temperature and supply voltage, with real wires and real noise, is the hard part.</p>
+
+    <div class="tl">
+      <div class="ev rise"><div class="when">2020</div><h3>The internship PLL</h3><p>Built during a VSD online internship. It was a working schematic, but the loop-filter capacitors alone (200&nbsp;pF + 500&nbsp;pF) would have taken 0.098–0.128&nbsp;mm² of silicon.</p></div>
+      <div class="ev big rise"><div class="when">2026-09-17 · 23 commits in one day</div><h3>Restart, with an AI crew</h3><p>The design was rebuilt on SkyWater 130&nbsp;nm. 31 experiments and 4 candidate designs followed in a week. Two of them were humbling.</p></div>
+      <div class="ev bad rise"><div class="when">Sept · CANDIDATE-001</div><h3>The "4.8× better" that wasn't</h3><p>A headline jitter improvement turned out to be about 90% measurement-window artifact. It was caught, an erratum was written and the claim was retracted. That set the tone for everything after.</p></div>
+      <div class="ev big rise"><div class="when">2026-10-18</div><h3>The mission</h3><p>The goal became the most rigorously verified, PVT-calibrated, reproducible open PLL. Every claim must climb the evidence ladder: hypothesis → analytical → transistor → nonlinear → disturbance → PVT → physical.</p></div>
+      <div class="ev bad rise"><div class="when">2026-10-20</div><h3>The noise wall</h3><p>Deterministic jitter was a beautiful 0.3&nbsp;ps. Then real device noise was switched on, and it came out at 14.6&nbsp;ps against a 10&nbsp;ps budget.</p></div>
+      <div class="ev big rise"><div class="when">2026-10-21 → 23 · 29 commits</div><h3>Layout, stages S0–S9</h3><p>Generated layout, extracted parasitics, calibrated a fast proxy against full extraction, ran a sweet-spot search and signed off on the extracted chip.</p></div>
+      <div class="ev bad rise"><div class="when">2026-10-24 · 03:00</div><h3>The Mac gave up</h3><p>Six parallel noise sims at about 14&nbsp;GB each needed about 83&nbsp;GB of RAM on a 64&nbsp;GB machine. The result was a kernel panic. New rule: at most three at once, and measure memory first.</p></div>
+    </div>
+
+    <div class="commits rise" id="commitchart">
+      <div class="legend"><span><i style="background:var(--coral)"></i>commits per day, 2026</span></div>
+      <svg viewBox="0 0 760 210" role="img" aria-label="Commits per day: 23 on Sep 17, burst again Oct 21 with 19"></svg>
+    </div>
+  </div>
+</section>
+
+<section id="crew">
+  <div class="wrap">
+    <div class="k">02 / The crew</div>
+    <h2 class="rise">Four models.<br><span class="grad">One rule.</span></h2>
+    <p class="lede">The AI didn't design the chip by magic. It wrote generators, drafted plans, ran the sims and reviewed layouts. Its most valuable output was a working habit: every claim is checked against a simulation before anyone believes it.</p>
+
+    <div class="crew">
+      <div class="card claude rise">
+        <div class="role">Orchestrator · Claude</div>
+        <h3>Claude</h3>
+        <ul>
+          <li>Wrote the gLayout generators: VCO, charge pump, MiM loop filter, top level</li>
+          <li>Built the sim harness, PVT and Monte Carlo sweeps, and the Magic/Netgen sign-off flow</li>
+          <li>Reviewed every claim from the other models before it entered the repo</li>
+        </ul>
+        <div class="catch"><b>CAUGHT</b>The CANDIDATE-001 "4.8×" claim, traced to the measurement window and retracted.</div>
+      </div>
+      <div class="card qwen rise">
+        <div class="role">Local worker · Qwen on the Mac</div>
+        <h3>Splash</h3>
+        <ul>
+          <li>Drafted the phase plans P0, P2 and P3, offline and at zero cost</li>
+          <li>Handled bulk drafting and long-tail grunt work</li>
+        </ul>
+        <div class="catch"><b>CAUGHT</b>Its state-of-the-art table cited papers that don't exist. It was rejected and rebuilt from checked sources. Its sim budget was also off by 2×: the real rate is about 80 sims per night, not 150.</div>
+      </div>
+      <div class="card gpt rise">
+        <div class="role">Second opinion · ChatGPT</div>
+        <h3>ChatGPT</h3>
+        <ul>
+          <li>Gave an independent layout review on 10-21</li>
+          <li>Its findings were adopted into the floorplan</li>
+        </ul>
+        <div class="catch"><b>WHY</b>A different model reading cold catches what the author's model has normalised.</div>
+      </div>
+      <div class="card ggl rise">
+        <div class="role">Literature · Google AI mode</div>
+        <h3>Search</h3>
+        <ul>
+          <li>Found the papers behind the contract-v2 benchmark: 14 published PLLs</li>
+          <li>Every number was traced to its source paper by hand</li>
+        </ul>
+        <div class="catch"><b>RESULT</b>A jitter target 4× tighter than the published median of 0.42% UI.</div>
+      </div>
+    </div>
+
+    <p class="motto rise">Consensus is not evidence.<small>— THE PROJECT RULE · ONLY SIMULATION OUTPUT COUNTS</small></p>
+  </div>
+</section>
+
+<section id="machine">
+  <div class="wrap">
+    <div class="k">03 / The machine</div>
+    <h2 class="rise">While we slept,<br>the chip <span class="grad">ran.</span></h2>
+    <p class="lede">A single closed-loop transistor-level sim takes about 45&nbsp;minutes. With full parasitic extraction it takes up to 2&nbsp;hours. You can't iterate on that by hand, so the loop ran overnight, every night.</p>
+
+    <div class="loop">
+      <div><b>Hypothesis</b><span>“wider VCO = less jitter”</span></div>
+      <div><b>Proxy</b><span>ρ ≥ 0.991 vs PEX</span></div>
+      <div><b>ngspice</b><span>8 parallel · ~45 min</span></div>
+      <div><b>PEX / LVS</b><span>Magic + Netgen</span></div>
+      <div><b>Verdict</b><span>contract v2 or bust</span></div>
+    </div>
+
+    <div class="machine">
+      <div class="stats">
+        <div class="stat rise"><b data-count="80">80</b><span>closed-loop sims per night</span></div>
+        <div class="stat rise"><b>108–119<small style="font-size:.45em"> min</small></b><span>per extracted-chip sim</span></div>
+        <div class="stat rise"><b data-count="97">97</b><span>layout runs · ~100 GDS files</span></div>
+        <div class="stat rise"><b>₹0.65</b><span>per sim on a GCP C3D VM: 24 runs, bit-identical to the Mac</span></div>
+      </div>
+      <div class="term rise" aria-label="Round 6 results log from the extracted chip">
+        <div class="bar"><i></i><i></i><i></i><em>runs/r6 · extracted chip · 03:12 IST</em></div>
+        <div class="body"><div class="roll" id="roll"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="noise">
+  <div class="wrap">
+    <div class="k">04 / The noise wall</div>
+    <h2 class="rise">0.3 ps was a lie.<br><span class="grad">14.6 ps was the truth.</span></h2>
+    <p class="lede">Noise-free sims make every oscillator look perfect. With thermal and flicker noise switched on in every transistor, jitter jumped 50×. The fix was more current in the ring. But more current means more power, and the noise model itself needed calibrating before the numbers could be trusted.</p>
+    <div class="chart" id="noisechart">
+      <div class="legend">
+        <span><i style="background:var(--coral)"></i>default noise model</span>
+        <span><i style="background:var(--cyan)"></i>calibrated γ (PMOS ≈0.9, NMOS ≈2.4)</span>
+        <span><i style="background:var(--red)"></i>10 ps budget at 100 MHz</span>
+      </div>
+      <svg viewBox="0 0 760 330" role="img" aria-label="Period jitter versus VCO current scale k"></svg>
+      <p class="cap">Period jitter vs VCO current scale k. Calibrated noise made things <em>worse</em>: k=6 went from 6.79 to 10.63&nbsp;ps. The design that shipped is ×1.5 (p1n3) plus 10&nbsp;pF bias-node caps. Those caps gave the same gain as a 1.2&nbsp;mW bias fix at zero extra power. It passes at every corner, with a 4% worst-case margin.</p>
+    </div>
+  </div>
+</section>
+
+<section id="sweet">
+  <div class="wrap">
+    <div class="k">05 / The sweet spot</div>
+    <h2 class="rise">Three walls.<br><span class="grad">One winner.</span></h2>
+    <p class="lede">Scale the VCO up and jitter improves, but power climbs and the cold, slow corner can't reach 100&nbsp;MHz. Scale it down and jitter blows the budget. A Latin-hypercube search drew 16 layouts, extracted every one, and scored each against all three constraints.</p>
+    <div class="chart" id="sweetchart">
+      <div class="legend">
+        <span><i style="background:var(--ok)"></i>feasible</span>
+        <span><i style="background:var(--amber)"></i>jitter margin</span>
+        <span><i style="background:var(--red)"></i>can't reach 100 MHz cold / over power</span>
+        <span><i style="background:var(--cyan)"></i>winner #3</span>
+      </div>
+      <svg viewBox="0 0 760 400" role="img" aria-label="Scatter of 15 layout candidates, VCO power vs jitter as fraction of limit"></svg>
+      <div class="callouts">
+        <div><b>Wall 1 · jitter</b>Jitter must stay at or below 0.90× the limit. Three small, cheap rings fail here.</div>
+        <div><b>Wall 2 · range</b>At ss / −40&nbsp;°C, bigger rings top out at 81–95&nbsp;MHz, below the 100&nbsp;MHz needed.</div>
+        <div><b>Wall 3 · power</b>Above s≈1.15 the VCO alone burns more than 900&nbsp;µW.</div>
+      </div>
+      <p class="cap">Winner #3: scale 0.96, degeneration 2376&nbsp;Ω, 741&nbsp;µW VCO, FoM −220.1&nbsp;dB against a ≤ −217 target. The fallback is #14. #13 never ran: its bias rail missed the 0.01&nbsp;µm grid.</p>
+    </div>
+  </div>
+</section>
+
+<section id="shrink">
+  <div class="wrap">
+    <div class="k">06 / The squeeze</div>
+    <h2 class="rise">Half the silicon.<br><span class="grad">Same loop.</span></h2>
+    <p class="lede">The loop filter was the elephant. Scaling R up and C down by k keeps the loop dynamics identical while the capacitors shrink. At k=3 it became C1 40&nbsp;pF, C2 2.67&nbsp;pF, R1 54&nbsp;kΩ.</p>
+    <div class="shrink" id="shrinkbars">
+      <div class="srow"><div class="lab">2020 filter caps alone<small>200 pF + 500 pF</small></div><div class="track"><div class="fill ghost" style="width:91%"></div><div class="contract" style="left:100%"></div></div><div class="v">0.128</div></div>
+      <div class="srow"><div class="lab">S5 · first full top level<small>k = 1</small></div><div class="track"><div class="fill" style="width:76%"></div><div class="contract" style="left:100%"></div></div><div class="v">0.1066</div></div>
+      <div class="srow"><div class="lab">S7 · loop filter /2<small>k = 2</small></div><div class="track"><div class="fill" style="width:47%"></div></div><div class="v">0.0664</div></div>
+      <div class="srow"><div class="lab">S9 · signed off<small>k = 3 · 430 × 134 µm</small></div><div class="track"><div class="fill win" style="width:41%"></div></div><div class="v">0.0575</div></div>
+    </div>
+    <p class="cap mute" style="margin-top:12px;font-size:14px">mm². The red dashed line is the 0.14&nbsp;mm² contract limit, which is also the published median.</p>
+  </div>
+</section>
+
+<section id="signoff">
+  <div class="wrap">
+    <div class="k">07 / Sign-off</div>
+    <h2 class="rise">Extracted. Shaken.<br><span class="grad">Locked.</span></h2>
+    <p class="lede">The final checks ran on the real extracted netlist, with every parasitic resistor and capacitor in: 8 of 8 PVT and Monte Carlo points passed. A ±50&nbsp;mV supply step caused no cycle slip.</p>
+    <div class="sign">
+      <div><b>17–29 µs</b><span>lock time</span><em>limit 50 µs</em></div>
+      <div><b>262–833 µW</b><span>total power</span><em>limit 1 mW</em></div>
+      <div><b>50.0–51.9%</b><span>duty cycle</span><em>limit 45–55%</em></div>
+      <div><b>−220.1 dB</b><span>FoM (VCO)</span><em>limit ≤ −217</em></div>
+      <div><b>0.59–0.92 V</b><span>Vctrl</span><em>window 0.3–1.4 V</em></div>
+      <div><b>≤ 0.12 mV</b><span>Vctrl ripple</span><em>quiet</em></div>
+      <div><b>0.09 cyc</b><span>supply-step phase error</span><em>recovers in 1.27 µs</em></div>
+      <div><b>427</b><span>devices + 24 MiM caps</span><em>DRC / LVS clean</em></div>
+    </div>
+    <div class="honest"><b>WHAT'S STILL OPEN</b>The −220.1&nbsp;dB FoM comes from the calibrated proxy model, not yet from device noise on the fully extracted loop. That re-run is the one that crashed the Mac. It's queued again at three sims at a time. DRC is Magic-only so far; KLayout cross-check and antenna and density reports are still to do. This page will be updated when they land.</div>
+  </div>
+</section>
+
+<section id="compare">
+  <div class="wrap">
+    <div class="k">08 / Then vs now</div>
+    <h2 class="rise">2020 baseline vs<br><span class="grad">pruthapll today.</span></h2>
+    <p class="lede">The baseline is the 2020 internship design, re-simulated on SKY130 in September with the same test bench. The final column is the signed-off layout with parasitics extracted. Not every row is a win. Lock time and peak power were traded away to meet the noise budget.</p>
+    <div class="scorebar rise">
+      <div><b>8</b><span>improved</span></div>
+      <div><b>5</b><span>new capability</span></div>
+      <div class="bad"><b>2</b><span>traded off</span></div>
+    </div>
+    <div class="tablewrap rise">
+    <table class="cmp">
+      <thead><tr><th>Metric</th><th>2020 baseline</th><th>pruthapll final</th><th>Change</th></tr></thead>
+      <tbody>
+        <tr class="grp"><td colspan="4">Silicon</td></tr>
+        <tr><td>Process</td><td>osu180 (2020)</td><td>SkyWater SKY130</td><td><span class="tag new">open PDK, tapeout-ready</span></td></tr>
+        <tr><td>Physical layout</td><td>Loop filter never laid out (osu180 had no usable caps)</td><td>Full chip, Magic DRC + Netgen LVS clean</td><td><span class="tag new">new</span></td></tr>
+        <tr><td>Loop filter C1 / C2 / R1</td><td>200&nbsp;pF / 500&nbsp;pF / 500&nbsp;Ω</td><td>40&nbsp;pF / 2.67&nbsp;pF / 54&nbsp;kΩ</td><td><span class="tag up">−94% capacitance</span></td></tr>
+        <tr><td>Area</td><td>0.098–0.128&nbsp;mm² <small>caps alone, estimated</small></td><td>0.0575&nbsp;mm² <small>whole chip, 430 × 134 µm</small></td><td><span class="tag up">41–55% smaller, all-in</span></td></tr>
+        <tr class="grp"><td colspan="4">Performance</td></tr>
+        <tr><td>Period jitter, deterministic <small>at 100 MHz</small></td><td>23.8&nbsp;ps</td><td>0.05–0.14&nbsp;ps</td><td><span class="tag up">≥170× lower</span></td></tr>
+        <tr><td>Period jitter, device noise</td><td>never measured <small>("future work")</small></td><td>&lt; 10&nbsp;ps with calibrated γ <small>proxy model</small></td><td><span class="tag new">new</span></td></tr>
+        <tr><td>FoM</td><td>not computed</td><td>−220.1&nbsp;dB <small>published median −216.6</small></td><td><span class="tag up">beats median by 3.5 dB</span></td></tr>
+        <tr><td>Duty cycle</td><td>spec 48–52%</td><td>50.0–51.9% <small>across all PVT</small></td><td><span class="tag up">in spec everywhere</span></td></tr>
+        <tr><td>Lock time</td><td>3.9–18.3&nbsp;µs <small>typical corner only</small></td><td>17.4–29.2&nbsp;µs <small>all PVT, extracted</small></td><td><span class="tag dn">slower; limit is 50 µs</span></td></tr>
+        <tr><td>Power</td><td>538–575&nbsp;µW <small>typical corner only</small></td><td>262–833&nbsp;µW <small>across PVT</small></td><td><span class="tag dn">higher at fast corners; limit is 1 mW</span></td></tr>
+        <tr><td>Supply-step robustness</td><td>not tested</td><td>±50&nbsp;mV: 0 cycle slips, 1.27&nbsp;µs recovery</td><td><span class="tag new">new</span></td></tr>
+        <tr class="grp"><td colspan="4">Proof</td></tr>
+        <tr><td>Corners verified</td><td>1 (typical, 27&nbsp;°C)</td><td>PVT + Monte Carlo, −40 to 125&nbsp;°C, 1.62–1.98&nbsp;V</td><td><span class="tag up">full envelope</span></td></tr>
+        <tr><td>Netlist verified</td><td>Schematic</td><td>Extracted (every parasitic R and C)</td><td><span class="tag up">silicon-realistic</span></td></tr>
+        <tr><td>Spec basis</td><td>Internship spec sheet</td><td>Contract v2, benchmarked against 14 published PLLs</td><td><span class="tag up">literature-grade</span></td></tr>
+        <tr><td>Reproducibility</td><td>Manual runs</td><td>Scripted flow; GCP re-run bit-identical to the Mac</td><td><span class="tag new">new</span></td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="cap mute" style="margin-top:12px;font-size:14px">Baseline numbers: <span class="mono">docs/exp022-ppa-characterization.md</span> and <span class="mono">docs/pareto-frontier-classical.md</span>. Both columns report deterministic jitter as steady-state period standard deviation, but from two generations of the analyzer script. Final numbers: round 6 on the extracted chip and the S9 sign-off pack.</p>
+    <div class="cta">
+      <a class="btn" href="/pjsilicon/pruthapll/">Explore the layout atlas →</a>
+      <a class="btn ghost" href="/apps.html#silicon">More things we've built</a>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer><div class="wrap">pjsilicon · pruthapll · SKY130 ×8 integer-N CP-PLL · built 2026-09-17 → 2026-10-23 with Claude, Qwen, ChatGPT and a lot of ngspice.</div></footer>
+
+<script>
+(()=>{
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const NS='http://www.w3.org/2000/svg';
+const el=(t,a={},p)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);p&&p.appendChild(e);return e};
+const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+
+/* ---------- hero scope: ref vs feedback clock locking ---------- */
+const cv=document.getElementById('scope'),cx=cv.getContext('2d');
+const dot=document.getElementById('lockdot'),txt=document.getElementById('locktxt');
+let W,H,dpr;
+function size(){dpr=Math.min(devicePixelRatio||1,2);W=cv.clientWidth;H=cv.clientHeight;cv.width=W*dpr;cv.height=H*dpr;cx.setTransform(dpr,0,0,dpr,0,0)}
+size();addEventListener('resize',size);
+const CYCLE=9; // seconds per lock acquisition
+function frame(now){
+  const t=RM?CYCLE:((now/1000)%(CYCLE+3));
+  const lockT=Math.min(t/CYCLE,1);
+  // damped phase error + Vctrl settle (2nd-order)
+  const z=0.55,wn=7.5,s=lockT*1.25;
+  const env=Math.exp(-z*wn*s);
+  const perr=env*Math.cos(wn*Math.sqrt(1-z*z)*s);
+  const vctrl=1-env*(Math.cos(wn*.83*s)+z/.83*Math.sin(wn*.83*s));
+  cx.clearRect(0,0,W,H);
+  // grid
+  cx.strokeStyle='rgba(42,53,80,.35)';cx.lineWidth=1;
+  const g=Math.max(48,W/18);
+  for(let x=(-((now/60)%g));x<W;x+=g){cx.beginPath();cx.moveTo(x,0);cx.lineTo(x,H);cx.stroke()}
+  for(let y=0;y<H;y+=g){cx.beginPath();cx.moveTo(0,y);cx.lineTo(W,y);cx.stroke()}
+  const shift=RM?0:now/22;
+  const per=Math.max(110,W/9);
+  const sq=(y0,amp,ph,col,glow)=>{
+    cx.beginPath();cx.strokeStyle=col;cx.lineWidth=2;cx.shadowColor=col;cx.shadowBlur=glow;
+    let prev=null;
+    for(let x=0;x<=W;x+=2){
+      const v=(((x+shift+ph)%per)+per)%per<per/2?1:0;
+      const y=y0-v*amp;
+      if(prev===null)cx.moveTo(x,y);else if(prev!==v){cx.lineTo(x,y0-prev*amp);cx.lineTo(x,y)}else cx.lineTo(x,y);
+      prev=v;
+    }
+    cx.stroke();cx.shadowBlur=0;
+  };
+  const top=H*.72;
+  sq(top,26,0,'rgba(255,200,87,.55)',8);
+  sq(top+56,26,perr*per*.45,'rgba(92,225,230,.75)',14);
+  // Vctrl trace across width as time
+  cx.beginPath();cx.strokeStyle='rgba(255,122,89,.8)';cx.lineWidth=2;cx.shadowColor='#ff7a59';cx.shadowBlur=16;
+  const n=Math.floor(W*lockT);
+  for(let x=0;x<=n;x+=3){const ss=(x/W)*1.25;const e=Math.exp(-z*wn*ss);
+    const v=1-e*(Math.cos(wn*.83*ss)+z/.83*Math.sin(wn*.83*ss));
+    const y=H*.48-v*H*.16; x?cx.lineTo(x,y):cx.moveTo(x,y)}
+  cx.stroke();cx.shadowBlur=0;
+  if(n>0){const ss=(n/W)*1.25,e=Math.exp(-z*wn*ss),v=1-e*(Math.cos(wn*.83*ss)+z/.83*Math.sin(wn*.83*ss));
+    cx.fillStyle='#ffb199';cx.beginPath();cx.arc(n,H*.48-v*H*.16,4,0,7);cx.fill()}
+  cx.font='11px JetBrains Mono, monospace';cx.fillStyle='rgba(139,148,170,.7)';
+  cx.fillText('REF  12.5 MHz',12,top-34);cx.fillText('FB = VCO / 8',12,top+22);cx.fillText('Vctrl',12,H*.48-H*.16-10);
+  const locked=Math.abs(perr)<.03&&lockT>.6;
+  dot.classList.toggle('on',locked);
+  txt.textContent=locked?'locked · 100.000 MHz':'acquiring lock… Δφ '+(perr*180).toFixed(1)+'°';
+  if(!RM)requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+/* ---------- counters ---------- */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting)return;io.unobserve(e.target);
+  const n=e.target, end=+n.dataset.count; if(RM||!end)return;
+  const t0=performance.now(),d=1400;
+  const step=t=>{const p=Math.min((t-t0)/d,1),v=Math.round(end*(1-Math.pow(1-p,3)));n.textContent=v.toLocaleString('en-US');if(p<1)requestAnimationFrame(step)};
+  requestAnimationFrame(step)}),{threshold:.4});
+document.querySelectorAll('[data-count]').forEach(n=>io.observe(n));
+// charts: fully drawn at rest; replay entrance when scrolled into view
+const io2=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('play');io2.unobserve(e.target)}}),{threshold:.3});
+
+/* ---------- commit chart ---------- */
+{
+ const d=[['09-17',23],['09-18',7],['09-19',0],['09-20',1],['09-21',13],['09-22',13],['09-23',7],['09-24',3],['…',null],['10-18',7],['10-19',10],['10-20',9],['10-21',19],['10-22',7],['10-23',3]];
+ const s=document.querySelector('#commitchart svg');const x0=30,bw=44,gap=4,h=150,base=180,mx=23;
+ el('line',{x1:x0,x2:740,y1:base,y2:base,stroke:css('--line2')},s);
+ d.forEach(([lab,v],i)=>{const x=x0+i*(bw+gap);
+  if(v===null){const t=el('text',{x:x+bw/2,y:base-10,'text-anchor':'middle','font-size':11},s);t.textContent='3 wk pause';return}
+  const bh=v/mx*h;
+  const r=el('rect',{x,y:base-bh,width:bw,height:Math.max(bh,1),rx:4,fill:v>=19?css('--coral'):'#5a3a33',class:'pop'},s);
+  r.style.transformOrigin='bottom';r.style.animationDelay=(i*60)+'ms';
+  if(v){const t=el('text',{x:x+bw/2,y:base-bh-6,'text-anchor':'middle','font-size':11,fill:css('--ink')},s);t.textContent=v}
+  const l=el('text',{x:x+bw/2,y:base+18,'text-anchor':'middle','font-size':10},s);l.textContent=lab;
+ });
+ io2.observe(document.getElementById('commitchart'));
+}
+
+/* ---------- sim log ticker (round 6, extracted chip) ---------- */
+{
+ const rows=[
+ ['r6s3x_ss_1v62_125','100.00',0.05,29.2,543.8,'PASS'],['r6s3x_ff_1v98_125','40.00',0.97,17.4,528.9,'PASS'],
+ ['r6s3x_ff_1v98_m40','40.00',0.26,27.0,311.5,'PASS'],['r6s3_ff_12.5_T125','100.00',0.06,22.3,819.9,'PASS'],
+ ['r6s3_fs_12.5_V1.98','100.00',0.11,27.2,833.2,'PASS'],['r6s2_tt_5','40.00',0.18,24.6,261.6,'PASS'],
+ ['r6s2_tt_12.5','100.00',0.14,28.2,602.4,'PASS'],['r6s5_mc1','80.00',0.19,28.1,493.8,'PASS'],
+ ['r6s4_tt_12.5_p50','100.02',6.65,70.2,633.1,'STEP'],['r6s4_tt_12.5_m50','99.98',6.66,70.3,572.7,'STEP']];
+ const roll=document.getElementById('roll');let html='';
+ const line=r=>`<div class="l"><span class="c">▸ ${r[0].padEnd(19,' ')}</span> f=${r[1]}MHz jit=${r[2].toFixed(2)}ps lock=${r[3].toFixed(1)}µs P=${r[4]}µW <span class="${r[5]==='PASS'?'p':'f'}">${r[5]==='PASS'?'PASS':'±50mV · 0 slips'}</span></div>`;
+ const block=rows.map(line).join('')+'<div class="l mute">── round 6 · 8/8 PASS · supply step: no cycle slip ──</div><div class="l mute">$ next: signoff_noise.py WAVE=3</div>';
+ roll.innerHTML=block+block;
+}
+
+/* ---------- noise chart ---------- */
+{
+ const s=document.querySelector('#noisechart svg');
+ const X=k=>70+(k-1)/9*650, Y=j=>290-j/16*260;
+ for(let j=0;j<=16;j+=4){el('line',{x1:70,x2:720,y1:Y(j),y2:Y(j),stroke:css('--line')},s);const t=el('text',{x:58,y:Y(j)+4,'text-anchor':'end','font-size':11},s);t.textContent=j+' ps'}
+ [1,2,4,6,10].forEach(k=>{const t=el('text',{x:X(k),y:312,'text-anchor':'middle','font-size':11},s);t.textContent='k='+k});
+ el('line',{x1:70,x2:720,y1:Y(10),y2:Y(10),stroke:css('--red'),'stroke-dasharray':'6 5','stroke-width':1.5},s);
+ const tb=el('text',{x:716,y:Y(10)-8,'text-anchor':'end','font-size':11,fill:css('--red')},s);tb.textContent='budget 10 ps';
+ const series=(pts,col)=>{el('path',{d:pts.map((p,i)=>(i?'L':'M')+X(p[0])+' '+Y(p[1])).join(' '),fill:'none',stroke:col,'stroke-width':2.5,class:'draw'},s);
+  pts.forEach((p,i)=>{const c=el('circle',{cx:X(p[0]),cy:Y(p[1]),r:5,fill:css('--bg'),stroke:col,'stroke-width':2.5,class:'pop'},s);c.style.animationDelay=(.3+i*.25)+'s';
+   const t=el('text',{x:X(p[0])+9,y:Y(p[1])-9,'font-size':11,fill:css('--ink')},s);t.textContent=p[1]})};
+ series([[1,14.6],[2,9.86],[4,6.53],[6,6.79],[10,5.14]],css('--coral'));
+ series([[6,10.63],[10,7.59]],css('--cyan'));
+ const a=el('text',{x:X(1)+12,y:Y(14.6)+20,'font-size':11,fill:css('--coral2')},s);a.textContent='first honest number';
+ io2.observe(document.getElementById('noisechart'));
+}
+
+/* ---------- sweet spot scatter ---------- */
+{
+ const s=document.querySelector('#sweetchart svg');
+ const pts=[[12,697.1,.908,'jit'],[8,711.0,.931,'jit'],[14,709.8,.871,'ok'],[15,722.4,.908,'jit'],[3,741.1,.887,'win'],[0,759.4,.852,'ok'],
+  [11,797.9,.828,'rng'],[4,814.1,.867,'ok'],[10,942.5,.836,'rng'],[7,917.3,.765,'pwr'],[5,993.9,.72,'rng'],[9,1100.7,.742,'rng'],[6,1127.3,.635,'rng'],[2,1185.3,.684,'rng'],[1,1256.9,.635,'rng']];
+ const X=p=>80+(p-650)/650*640, Y=r=>350-(r-.6)/.36*320;
+ for(let r=.6;r<=.961;r+=.05){el('line',{x1:80,x2:720,y1:Y(r),y2:Y(r),stroke:css('--line')},s);const t=el('text',{x:70,y:Y(r)+4,'text-anchor':'end','font-size':11},s);t.textContent=r.toFixed(2)}
+ for(let p=700;p<=1300;p+=100){const t=el('text',{x:X(p),y:372,'text-anchor':'middle','font-size':11},s);t.textContent=p}
+ const xl=el('text',{x:400,y:396,'text-anchor':'middle','font-size':11},s);xl.textContent='VCO power, µW →';
+ const yl=el('text',{x:16,y:190,'font-size':11,transform:'rotate(-90 16 190)','text-anchor':'middle'},s);yl.textContent='jitter / limit (lower = better)';
+ // feasible region: jit<=0.90, power<=900 and left of range wall (~830 µW)
+ el('rect',{x:X(650),y:Y(.90),width:X(830)-X(650),height:Y(.6)-Y(.90),fill:'rgba(126,224,161,.07)',stroke:css('--ok'),'stroke-dasharray':'4 4'},s);
+ const ft=el('text',{x:X(660),y:Y(.62),'font-size':11,fill:css('--ok')},s);ft.textContent='FEASIBLE';
+ el('line',{x1:80,x2:720,y1:Y(.90),y2:Y(.90),stroke:css('--amber'),'stroke-width':1.5},s);
+ const w1=el('text',{x:716,y:Y(.90)-7,'text-anchor':'end','font-size':11,fill:css('--amber')},s);w1.textContent='wall 1 · jitter 0.90';
+ el('line',{x1:X(900),x2:X(900),y1:20,y2:350,stroke:css('--red'),'stroke-width':1.5,'stroke-dasharray':'6 5'},s);
+ const w3=el('text',{x:X(900)+6,y:30,'font-size':11,fill:css('--red')},s);w3.textContent='wall 3 · 900 µW';
+ const w2=el('text',{x:X(830)+6,y:Y(.62),'font-size':11,fill:css('--red')},s);w2.textContent='wall 2 · range ↗';
+ const col={ok:css('--ok'),jit:css('--amber'),rng:css('--red'),pwr:css('--red'),win:css('--cyan')};
+ pts.forEach(([i,p,r,k],n)=>{
+  if(k==='win'){el('circle',{cx:X(p),cy:Y(r),r:9,fill:'none',stroke:col.win,'stroke-width':2,class:'winner'},s)}
+  const c=el('circle',{cx:X(p),cy:Y(r),r:k==='win'?8:6,fill:col[k],class:'pop'},s);c.style.animationDelay=(n*90)+'ms';
+  const t=el('text',{x:X(p)+10,y:Y(r)+4,'font-size':k==='win'?13:10,fill:k==='win'?col.win:css('--mute')},s);t.textContent=k==='win'?'#3 WINNER':'#'+i;
+ });
+ io2.observe(document.getElementById('sweetchart'));
+}
+io2.observe(document.getElementById('shrinkbars'));
+})();
+</script>
+</body>
+</html>
