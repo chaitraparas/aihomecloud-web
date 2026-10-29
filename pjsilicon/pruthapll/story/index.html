@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>pruthapll: 36 Nights</title>
-<meta name="description" content="How a SKY130 PLL went from a 2020 internship schematic to a 0.0575 mm² signed-off layout in 36 days: AI crew, thousands of simulations, and the search for the sweet spot.">
+<meta name="description" content="How a SKY130 PLL went from a 2020 internship schematic to a 0.0575 mm² DRC/LVS-clean layout in 36 days: AI crew, thousands of simulations, and the search for the sweet spot.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -248,7 +248,7 @@ footer{padding:60px 0 80px;color:var(--dim);font-family:var(--mono);font-size:12
       <div class="ev bad rise"><div class="when">Sept · CANDIDATE-001</div><h3>The "4.8× better" that wasn't</h3><p>A headline jitter improvement turned out to be about 90% measurement-window artifact. It was caught, an erratum was written and the claim was retracted. That set the tone for everything after.</p></div>
       <div class="ev big rise"><div class="when">2026-10-18</div><h3>The mission</h3><p>The goal became the most rigorously verified, PVT-calibrated, reproducible open PLL. Every claim must climb the evidence ladder: hypothesis → analytical → transistor → nonlinear → disturbance → PVT → physical.</p></div>
       <div class="ev bad rise"><div class="when">2026-10-20</div><h3>The noise wall</h3><p>Deterministic jitter was a beautiful 0.3&nbsp;ps. Then real device noise was switched on, and it came out at 14.6&nbsp;ps against a 10&nbsp;ps budget.</p></div>
-      <div class="ev big rise"><div class="when">2026-10-21 → 23 · 29 commits</div><h3>Layout, stages S0–S9</h3><p>Generated layout, extracted parasitics, calibrated a fast proxy against full extraction, ran a sweet-spot search and signed off on the extracted chip.</p></div>
+      <div class="ev big rise"><div class="when">2026-10-21 → 23 · 29 commits</div><h3>Layout, stages S0–S9</h3><p>Generated layout, extracted parasitics, calibrated a fast proxy against full extraction, ran a sweet-spot search and closed sign-off pack v1 on the extracted chip.</p></div>
       <div class="ev bad rise"><div class="when">2026-10-24 · 03:00</div><h3>The Mac gave up</h3><p>Six parallel noise sims at about 14&nbsp;GB each needed about 83&nbsp;GB of RAM on a 64&nbsp;GB machine. The result was a kernel panic. New rule: at most three at once, and measure memory first.</p></div>
     </div>
 
@@ -387,7 +387,7 @@ footer{padding:60px 0 80px;color:var(--dim);font-family:var(--mono);font-size:12
       <div class="srow"><div class="lab">2020 filter caps alone<small>200 pF + 500 pF</small></div><div class="track"><div class="fill ghost" style="width:91%"></div><div class="contract" style="left:100%"></div></div><div class="v">0.128</div></div>
       <div class="srow"><div class="lab">S5 · first full top level<small>k = 1</small></div><div class="track"><div class="fill" style="width:76%"></div><div class="contract" style="left:100%"></div></div><div class="v">0.1066</div></div>
       <div class="srow"><div class="lab">S7 · loop filter /2<small>k = 2</small></div><div class="track"><div class="fill" style="width:47%"></div></div><div class="v">0.0664</div></div>
-      <div class="srow"><div class="lab">S9 · signed off<small>k = 3 · 430 × 134 µm</small></div><div class="track"><div class="fill win" style="width:41%"></div></div><div class="v">0.0575</div></div>
+      <div class="srow"><div class="lab">S9 · sign-off pack<small>k = 3 · 430 × 134 µm</small></div><div class="track"><div class="fill win" style="width:41%"></div></div><div class="v">0.0575</div></div>
     </div>
     <p class="cap mute" style="margin-top:12px;font-size:14px">mm². The red dashed line is the 0.14&nbsp;mm² contract limit, which is also the published median.</p>
   </div>
