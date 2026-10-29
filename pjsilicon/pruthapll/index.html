@@ -1,64 +1,108 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>pruthapll Layout Atlas</title>
-<meta name="description" content="pjsilicon pruthapll: a SKY130 ×8 charge-pump PLL, 0.0575 mm², DRC and LVS clean. Block-by-block layout atlas with circuits and extracted-netlist results.">
+<title>pruthapll Datasheet</title>
+<meta name="description" content="pjsilicon pruthapll: a SKY130 ×8 charge-pump PLL, 0.0575 mm², DRC and LVS clean. Datasheet with spec table, extracted-netlist characterization and a block-by-block layout atlas.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=JetBrains+Mono:wght@400;600&display=swap">
 <style>
-/* Layout: a chip-viewer hero (dark "scope" panel in both themes) over a reading column of block plates, each plate = crop | facts | schematic. */
+/* Datasheet layout in the story page's tokens: spec table and charts first, then the chip viewer and block plates (crop | facts | schematic). */
 :root{
-  --bg:#f3f4f1; --surface:#ffffff; --ink:#1b2230; --muted:#5c6575; --rule:#d9dcd6;
-  --accent:#c2410c; --net:#0f766e; --scope:#0e1420; --scope-ink:#cfd6e4;
-  --f-display:"IBM Plex Sans Condensed","Arial Narrow",system-ui,sans-serif;
-  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
-  --f-mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  color-scheme:dark;
+  --bg:#07090f; --panel:#0f1420; --line:#1c2435; --line2:#2a3550;
+  --ink:#eef1f7; --mute:#8b94aa; --dim:#5a6378;
+  --coral:#ff7a59; --cyan:#5ce1e6; --amber:#ffc857; --red:#ff4d6d; --ok:#7ee0a1;
+  /* names the schematic CSS uses */
+  --surface:var(--panel); --muted:var(--mute); --rule:var(--line); --accent:var(--coral); --net:var(--cyan);
+  --scope:#05070c; --scope-ink:#cfd6e4;
+  --f-display:"Bricolage Grotesque",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
 }
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#12161d; --surface:#1a2029; --ink:#e4e8ef; --muted:#97a0b0; --rule:#2c3440;
-  --accent:#fb923c; --net:#2dd4bf; --scope:#0b0f17; --scope-ink:#cfd6e4; color-scheme:dark}}
-:root[data-theme="dark"]{
-  --bg:#12161d; --surface:#1a2029; --ink:#e4e8ef; --muted:#97a0b0; --rule:#2c3440;
-  --accent:#fb923c; --net:#2dd4bf; --scope:#0b0f17; --scope-ink:#cfd6e4; color-scheme:dark}
 *{box-sizing:border-box}
-body{background:var(--bg);color:var(--ink);font:15px/1.6 var(--f-body);margin:0}
-.wrap{max-width:1120px;margin:0 auto;padding-inline:20px;padding-block:28px 64px}
-h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.15}
-h1{font-size:clamp(28px,4.4vw,44px);font-weight:700;letter-spacing:-.01em}
-h2{font-size:26px;font-weight:600}
-h3{font-size:17px;font-weight:600}
-.eyebrow{font:500 12px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+body{background:var(--bg);color:var(--ink);font:15.5px/1.6 var(--f-display);margin:0;overflow-x:hidden}
+a{color:var(--cyan)}
+.wrap{max-width:1120px;margin:0 auto;padding-inline:max(16px,env(safe-area-inset-left));padding-block:24px 64px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.05;letter-spacing:-.02em}
+h1{font-size:clamp(44px,7vw,76px);font-weight:800}
+h2{font-size:clamp(26px,3.4vw,36px);font-weight:800}
+h3{font-size:18px;font-weight:600;letter-spacing:-.01em}
+.eyebrow{font:600 11.5px var(--f-mono);letter-spacing:.16em;text-transform:uppercase;color:var(--coral)}
 .mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
-p{margin:0;max-width:68ch}
-header{display:grid;gap:10px;margin-bottom:22px}
-.lede{color:var(--muted)}
-.stats{display:flex;flex-wrap:wrap;gap:0;border:1px solid var(--rule);background:var(--surface);margin-top:8px}
-.stat{padding:10px 16px;border-right:1px solid var(--rule);min-width:0;flex:1 1 130px}
-.stat:last-child{border-right:0}
+p{margin:0;max-width:70ch}
+header{display:grid;gap:12px;margin-bottom:10px}
+.sub{font:500 15px var(--f-mono);color:var(--mute)}
+.lede{color:#c9cfdc;font-size:17px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.badge{font:600 11.5px var(--f-mono);letter-spacing:.06em;padding:4px 10px;border-radius:99px;border:1px solid var(--line2);color:var(--mute);text-decoration:none}
+.badge.ok{color:var(--ok);border-color:rgba(126,224,161,.4);background:rgba(126,224,161,.06)}
+.badge.warn{color:var(--amber);border-color:rgba(255,200,87,.4);background:rgba(255,200,87,.06)}
+a.badge:hover{color:var(--ink);border-color:var(--mute)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-top:8px}
+.stat{padding:12px 16px;background:var(--panel)}
 .stat b{display:block;font:600 19px var(--f-mono);font-variant-numeric:tabular-nums}
-.stat span{font-size:12px;color:var(--muted)}
+.stat span{font-size:12.5px;color:var(--mute)}
+.toc{display:flex;flex-wrap:wrap;gap:4px 16px;font:500 12.5px var(--f-mono);margin-top:22px;padding-block:10px;border-block:1px solid var(--line)}
+.toc a{color:var(--mute);text-decoration:none}.toc a:hover{color:var(--ink)}
+section{margin-top:64px;scroll-margin-top:12px}
+.sec-head{display:grid;gap:8px;margin-bottom:18px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px}
+.tblwrap{overflow-x:auto}
+/* spec table */
+table.spec{border-collapse:collapse;width:100%;font-size:14px;min-width:720px}
+table.spec th,table.spec td{text-align:left;padding:9px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+table.spec th{font:600 11px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
+table.spec td.n{font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+table.spec tr:last-child td{border-bottom:0}
+.st{font:600 11px var(--f-mono);letter-spacing:.08em;padding:2px 8px;border-radius:99px;white-space:nowrap}
+.st.ok{color:var(--ok);background:rgba(126,224,161,.1)}
+.st.warn{color:var(--amber);background:rgba(255,200,87,.1)}
+.note{font-size:13px;color:var(--mute);margin-top:10px}
+.cond{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-top:14px}
+.cond div{background:var(--panel);padding:10px 14px;font-size:13px;color:var(--mute)}
+.cond b{display:block;font:600 14px var(--f-mono);color:var(--ink)}
+/* charts */
+.chart{padding:16px}
+.chart h3{margin-bottom:4px}
+.chart .cap{font-size:13px;color:var(--mute);margin-top:8px}
+.chart svg{display:block;width:100%;height:auto}
+.charts2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+svg.cv text{font-family:var(--f-mono)}
+svg.cv .ct{fill:var(--ink);font-size:12px;font-weight:600}
+svg.cv .ax{fill:var(--mute);font-size:10.5px}
+svg.cv .rl{fill:var(--ink);font-size:11.5px}
+svg.cv .mu{fill:var(--mute)}
+svg.cv .grid{stroke:var(--line)}
+svg.cv .band{fill:rgba(126,224,161,.08)}
+svg.cv .lim{stroke:var(--red);stroke-width:1.3;stroke-dasharray:4 3}
+svg.cv .trk{stroke:var(--line2)}
+.legend2{display:flex;flex-wrap:wrap;gap:4px 14px;font:11.5px var(--f-mono);color:var(--mute);margin-top:6px}
+.legend2 i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:0}
 /* scope panel */
-.scope{background:var(--scope);color:var(--scope-ink);padding:14px;margin-block:18px 10px}
+.scope{background:var(--scope);color:var(--scope-ink);padding:14px;border:1px solid var(--line);border-radius:12px}
 .scope-head{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;font:12px var(--f-mono);margin-bottom:10px;color:#8b95a8}
 .chip{position:relative;width:100%;overflow:hidden}
 .chip img{display:block;width:100%;height:auto}
 .hot{position:absolute;border:1px dashed rgba(255,255,255,.35);background:transparent;cursor:pointer;padding:0;transition:background .15s,border-color .15s}
-.hot:hover,.hot:focus-visible,.hot.on{background:rgba(251,146,60,.18);border:1.5px solid #fb923c;outline:none}
-.hot span{position:absolute;left:3px;top:2px;font:500 10px var(--f-mono);color:#fff;background:rgba(14,20,32,.8);padding:0 4px;white-space:nowrap;pointer-events:none}
+.hot:hover,.hot:focus-visible,.hot.on{background:rgba(255,122,89,.18);border:1.5px solid var(--coral);outline:none}
+.hot span{position:absolute;left:3px;top:2px;font:500 10px var(--f-mono);color:#fff;background:rgba(5,7,12,.8);padding:0 4px;white-space:nowrap;pointer-events:none}
 .hot.small span{top:auto;bottom:100%}
 .axis{display:flex;justify-content:space-between;font:11px var(--f-mono);color:#6b7487;margin-top:4px}
 .legend{display:flex;flex-wrap:wrap;gap:6px 14px;font:11px var(--f-mono);margin-top:10px;color:#a9b2c3}
 .legend i{display:inline-block;width:10px;height:10px;margin-right:5px;vertical-align:-1px}
-.hint{font-size:13px;color:var(--muted)}
+.bidx{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.bidx a{font:500 12px var(--f-mono);color:var(--ink);text-decoration:none;padding:5px 10px;border:1px solid var(--line2);border-radius:99px;display:inline-flex;align-items:center;gap:6px}
+.bidx a:hover,.bidx a:focus-visible{border-color:var(--coral);outline:none}
+.bidx i{width:8px;height:8px;border-radius:2px}
+a:focus-visible,button:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+.hint{font-size:13px;color:var(--mute);margin-top:8px}
 /* area bar */
-.areabar{display:flex;height:26px;border:1px solid var(--rule);margin-top:10px;overflow:hidden}
+.areabar{display:flex;height:26px;border:1px solid var(--line);border-radius:6px;margin-top:10px;overflow:hidden}
 .areabar div{min-width:0;font:10px var(--f-mono);color:#fff;display:flex;align-items:center;padding-left:4px;white-space:nowrap;overflow:hidden}
-.arealist{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:4px 18px;margin-top:8px;font-size:13px}
-.arealist div{display:flex;justify-content:space-between;gap:8px;border-bottom:1px dotted var(--rule)}
+.arealist{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:4px 18px;margin-top:10px;font-size:13px}
+.arealist div{display:flex;justify-content:space-between;gap:8px;border-bottom:1px dotted var(--line2)}
 .arealist i{display:inline-block;width:9px;height:9px;margin-right:6px}
-section{margin-top:46px}
-.sec-head{display:grid;gap:6px;margin-bottom:16px;border-top:2px solid var(--ink);padding-top:12px}
-/* system diagram */
-.diagram{background:var(--surface);border:1px solid var(--rule);padding:12px;overflow-x:auto}
+/* system diagram + schematics */
+.diagram{padding:12px;overflow-x:auto}
 svg.sch{display:block;width:100%;height:auto;min-width:520px}
 svg.sch text{font-family:var(--f-mono);font-size:11px;fill:var(--ink)}
 svg.sch .net{fill:var(--net);font-weight:500}
@@ -70,88 +114,147 @@ svg.sch .acc{stroke:var(--accent);stroke-width:1.8;fill:none}
 svg.sch .dot{fill:var(--ink)}
 svg.sch .rail{stroke:var(--muted);stroke-width:1.2;stroke-dasharray:4 3}
 /* block plates */
-.plate{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:0;background:var(--surface);border:1px solid var(--rule);margin-top:18px;scroll-margin-top:16px}
-.plate:target,.plate.flash{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}
+.plate{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-top:18px;scroll-margin-top:16px}
+.plate:target,.plate.flash{border-color:var(--coral);box-shadow:0 0 0 2px var(--coral)}
 .plate .crop{background:var(--scope);display:flex;flex-direction:column;justify-content:center;padding:10px;gap:6px;min-width:0}
 .plate .crop img{max-height:420px;width:auto;max-width:100%;margin:0 auto;display:block}
 .plate .crop figcaption{font:11px var(--f-mono);color:#8b95a8;text-align:center}
 .plate .body{padding:18px 20px;display:grid;gap:12px;align-content:start;min-width:0}
 .facts{display:grid;grid-template-columns:auto 1fr;gap:2px 14px;font-size:13px;margin:0}
-.facts dt{color:var(--muted)}
+.facts dt{color:var(--mute)}
 .facts dd{margin:0;font-family:var(--f-mono);font-variant-numeric:tabular-nums}
-.tag{display:inline-block;font:500 11px var(--f-mono);border:1px solid var(--accent);color:var(--accent);padding:0 6px;margin-right:6px}
-.plate .sch-wrap{grid-column:1/-1;border-top:1px solid var(--rule);padding:12px;overflow-x:auto}
+.tag{display:inline-block;font:600 11px var(--f-mono);border:1px solid var(--coral);color:var(--coral);padding:0 7px;border-radius:99px}
+.plate .sch-wrap{grid-column:1/-1;border-top:1px solid var(--line);padding:12px;overflow-x:auto}
 table.dev{border-collapse:collapse;font-size:12.5px;width:100%}
-table.dev th,table.dev td{text-align:left;padding:3px 8px 3px 0;border-bottom:1px solid var(--rule)}
-table.dev th{font-weight:500;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+table.dev th,table.dev td{text-align:left;padding:3px 8px 3px 0;border-bottom:1px solid var(--line)}
+table.dev th{font-weight:600;color:var(--mute);font-size:11px;text-transform:uppercase;letter-spacing:.06em}
 table.dev td.mono{white-space:nowrap}
-.tblwrap{overflow-x:auto}
-.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:0;border:1px solid var(--rule);background:var(--surface)}
-.results div{padding:12px 14px;border-bottom:1px solid var(--rule);border-right:1px solid var(--rule)}
-.results b{font:600 16px var(--f-mono);display:block}
-.results span{font-size:12px;color:var(--muted)}
-.pass{color:var(--net);font-weight:600}
-footer{margin-top:48px;font-size:12.5px;color:var(--muted);display:grid;gap:6px}
-@media (max-width:760px){.plate{grid-template-columns:1fr}.stat{flex-basis:45%}}
+/* verification */
+.ver{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.ver ul{list-style:none;margin:0;padding:6px 18px 12px}
+.ver li{padding:10px 0;border-bottom:1px solid var(--line);font-size:14px}
+.ver .open li.px b{color:var(--amber)}
+.ver li:last-child{border-bottom:0}
+.ver li b{font-weight:600}
+.ver li span{display:block;color:var(--mute);font-size:13px}
+.ver h3{padding:16px 18px 0}
+footer{margin-top:56px;font-size:12.5px;color:var(--mute);display:grid;gap:6px;border-top:1px solid var(--line);padding-top:16px}
+@media (max-width:820px){.plate,.charts2,.ver{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
-.sitebar{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:center;font:500 13px var(--f-mono);padding-bottom:14px;margin-bottom:18px;border-bottom:1px solid var(--rule)}
-.sitebar a{color:var(--muted);text-decoration:none}.sitebar a:hover{color:var(--accent)}
+.sitebar{position:sticky;top:0;z-index:20;display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-family:var(--f-mono);font-size:12px;padding:12px 0;margin:-12px 0 14px;color:var(--mute);background:linear-gradient(var(--bg) 60%,transparent)}
+.sitebar a{color:var(--mute);text-decoration:none}.sitebar a:hover{color:var(--ink)}
+.sitebar .sep{color:var(--dim)}.sitebar .here{color:var(--ink)}
 </style>
 </head><body>
 
 <div class="wrap">
-<nav class="sitebar" aria-label="Site"><a href="/">AiHomeCloud</a><span aria-hidden="true">/</span><a href="/apps.html#silicon">Other things we've built</a><span aria-hidden="true">/</span><span>pruthapll</span><span aria-hidden="true">·</span><a href="/pjsilicon/pruthapll/story/">How we built it →</a></nav>
+<nav class="sitebar" aria-label="Breadcrumb">
+  <a href="/">AiHomeCloud</a><span class="sep">/</span>
+  <a href="/apps.html#silicon">Other things we've built</a><span class="sep">/</span>
+  <span class="here">pruthapll</span><span class="sep">·</span>
+  <a href="/pjsilicon/pruthapll/story/">the story →</a>
+</nav>
 <header>
-  <div class="eyebrow">pjsilicon · SKY130 · 1.8 V · ×8 charge-pump PLL · dev name pll_s7c3_k3</div>
-  <h1>pruthapll Layout Atlas</h1>
-  <p class="lede">The extracted, DRC and LVS clean layout of the ×8 charge-pump PLL, block by block. Each block shows its silicon crop, its footprint, the transistor-level circuit and what it does in the loop. Click any block on the chip to jump to it.</p>
-  <div class="stats">
-    <div class="stat"><b>430 × 134 µm</b><span>die outline</span></div>
-    <div class="stat"><b>0.0575 mm²</b><span>area (contract &lt; 0.14)</span></div>
-    <div class="stat"><b>≤ 833 µW</b><span>worst-case power, extracted</span></div>
-    <div class="stat"><b>×8</b><span>5–12.5 MHz in → 40–100 MHz out</span></div>
-    <div class="stat"><b>17–29 µs</b><span>lock time, extracted</span></div>
+  <div class="eyebrow">pjsilicon · SKY130 · 1.8 V hard macro · datasheet v1</div>
+  <h1>pruthapll</h1>
+  <div class="sub">×8 integer-N charge-pump PLL · 5–12.5 MHz in → 40–100 MHz out · dev name pll_s7c3_k3</div>
+  <p class="lede">DRC and LVS clean. Every number below comes from closed-loop simulation of the extracted netlist (layout capacitances included) unless marked otherwise. Below the spec: the silicon block by block, each with its crop, footprint and transistor-level circuit.</p>
+  <div class="badges">
+    <span class="badge ok">✓ DRC 0 · LVS match</span>
+    <span class="badge ok">✓ 10 spec lines verified on extracted netlist</span>
+    <span class="badge warn">◐ 1 proxy · extracted noise run pending</span>
+    <span class="badge">sign-off pack v1 · 2026-10-23</span>
+    <a class="badge" href="https://aihomecloud.com/pjsilicon/pruthapll/story/">How we built it →</a>
   </div>
+  <div class="stats">
+    <div class="stat"><b>429.5 × 133.8 µm</b><span>die outline</span></div>
+    <div class="stat"><b>0.0575 mm²</b><span>area (contract &lt; 0.14)</span></div>
+    <div class="stat"><b>262–833 µW</b><span>power across corners</span></div>
+    <div class="stat"><b>17.4–29.2 µs</b><span>lock time, power-up</span></div>
+    <div class="stat"><b>−220.1 dB</b><span>VCO FoM (proxy)</span></div>
+  </div>
+  <nav class="toc" aria-label="Sections"><a href="#spec">01 Spec</a><a href="#char">02 Characterization</a><a href="#layout">03 Layout</a><a href="#floor">04 Floorplan</a><a href="#flow">05 Signal flow</a><a href="#blocks">06 Blocks</a><a href="#verify">07 Verification</a></nav>
 </header>
 
-<div class="scope">
-  <div class="scope-head"><span>pruthapll.gds · flat top cell</span><span>y = 0 at strip top · units µm</span></div>
-  <div class="chip" id="chip"><img src="img/full.png" alt="Full PLL layout: MiM loop-filter capacitor array across the top, transistor strip along the bottom" width="2600" height="818"></div>
-  <div class="axis"><span>0</span><span>100</span><span>200</span><span>300</span><span>430 µm</span></div>
-  <div class="legend" id="legend"></div>
-</div>
-<p class="hint">Dashed outlines mark each block's device-layer bounding box. Wiring between blocks runs on met3 (cyan) and met4 (yellow).</p>
+<section id="spec">
+  <div class="sec-head"><div class="eyebrow">01 · Electrical specification</div><h2>Contract v2 vs extracted silicon</h2>
+  <p>Limits are contract v2, set against 14 published SKY130-class PLLs. Measured ranges span every round-6 point: ss / 1.62 V / 125 °C, ff / 1.98 V at 125 °C and −40 °C, ff and fs at 12.5 MHz, tt at 5 and 12.5 MHz, a Monte Carlo sample, and the two supply-step points.</p></div>
+  <div class="card tblwrap"><table class="spec">
+    <thead><tr><th>Parameter</th><th>Condition</th><th>Limit</th><th>Measured</th><th>Margin</th><th>Status</th></tr></thead>
+    <tbody id="spectbl"></tbody></table></div>
+  <p class="note"><b>✓ Verified</b>: met on the extracted netlist under the stated condition. <b>◐ Proxy</b>: met, but measured on a calibrated proxy rather than the extracted design.<br>* FoM is measured on the S6/S7 proxy VCO (schematic plus calibrated parasitics, rank-matched to full PEX at ρ ≥ 0.991), not on the extracted loop. An extracted-netlist noise run is open, see 07. The two supply-step rows are judged on cycle slips with step_metric.py; a whole-window jitter metric would count the deliberate step.</p>
+  <div class="cond">
+    <div><b>tt · ss · ff · fs · MC</b>process corners covered</div>
+    <div><b>1.62 – 1.98 V</b>VDD (1.8 V ± 10 %)</div>
+    <div><b>−40 – 125 °C</b>junction temperature</div>
+    <div><b>REF · VOUT · VDD · VSS</b>met3 pins, no pads or ESD</div>
+  </div>
+</section>
 
-<section>
-  <div class="sec-head"><div class="eyebrow">Where the area goes</div><h2>Floorplan budget</h2>
+<section id="char">
+  <div class="sec-head"><div class="eyebrow">02 · Characterization</div><h2>Where each point sits against its limit</h2>
+  <p>Round 6: closed-loop transient on the full extracted chip, 108–119 min per simulation. Green bands are the allowed region, red dashed lines the contract limits. Hover a dot for its value.</p></div>
+  <div class="card chart"><h3>Does every corner stay inside its limits?</h3><p class="cap" style="margin:0 0 8px">Round 6, extracted netlist, eight static points. Simulated, not measured silicon.</p><div class="tblwrap"><svg class="cv" id="r6" role="img" aria-label="Lock time, power, VCTRL and duty cycle for eight PVT points against contract limits" style="min-width:760px"></svg></div>
+    <p class="cap">Lock time on the extracted netlist is about 2× the schematic value (9–16 µs) and stays under 60 % of the limit. Power peaks at 100 MHz on the fast corners. VCTRL stays well inside its range, so the VCO has tuning headroom left at every corner.</p></div>
+  <div class="charts2">
+    <div class="card chart"><h3>How much VCO current does the noise budget need?</h3><svg class="cv" id="noise" viewBox="0 0 640 310" role="img" aria-label="Jitter vs VCO current scale k, default and calibrated noise model, with 10 ps budget"></svg>
+      <div class="legend2"><span><i style="background:var(--mute)"></i>default PDK noise</span><span><i style="background:var(--amber)"></i>calibrated γ (P 0.87–0.92, N 2.35–2.52)</span><span><i style="background:var(--red)"></i>10 ps budget at 100 MHz</span></div>
+      <p class="cap">Period jitter vs VCO current scale k, simulated on the proxy VCO with device noise (not deterministic jitter). Calibrating γ against measured-style noise made k=6 go from 6.79 to 10.63 ps, so the noise budget, not speed, sized the VCO.</p></div>
+    <div class="card chart"><h3>Which layout clears all three walls?</h3><svg class="cv" id="sweet" viewBox="0 0 640 330" role="img" aria-label="Scatter of 15 layout candidates, VCO power vs jitter as fraction of limit"></svg>
+      <div class="legend2"><span><i style="background:var(--ok)"></i>feasible</span><span><i style="background:var(--amber)"></i>fails jitter margin</span><span><i style="background:var(--red)"></i>fails range or power</span><span><i style="background:var(--cyan)"></i>shipped #3</span></div>
+      <p class="cap">Stage A: 15 extracted layouts from LHS draws over VCO scale and degeneration, each extracted and scored at its worst corner. Walls: jitter ≤ 0.90× limit, 100 MHz reachable at ss / −40 °C, VCO ≤ 900 µW. #3 (scale 0.96, rdeg 2376 Ω, 741 µW) is the only point inside the jitter margin everywhere; #14 is the fallback.</p></div>
+  </div>
+</section>
+
+<section id="layout">
+  <div class="sec-head"><div class="eyebrow">03 · Layout</div><h2>The chip</h2>
+  <p>Single flat top cell. Click any block to jump to its plate.</p></div>
+  <div class="scope">
+    <div class="scope-head"><span>pruthapll.gds · flat top cell</span><span>y = 0 at strip top · units µm</span></div>
+    <div class="chip" id="chip"><img src="img/full.png" alt="Full PLL layout: MiM loop-filter capacitor array across the top, transistor strip along the bottom" width="2600" height="818"></div>
+    <div class="axis"><span>0</span><span>100</span><span>200</span><span>300</span><span>430 µm</span></div>
+    <div class="legend" id="legend"></div>
+  </div>
+  <nav class="bidx" id="bidx" aria-label="Blocks"></nav>
+  <p class="hint">Dashed outlines mark each block's device-layer bounding box. Wiring between blocks runs on met3 (cyan) and met4 (yellow).</p>
+</section>
+
+<section id="floor">
+  <div class="sec-head"><div class="eyebrow">04 · Where the area goes</div><h2>Floorplan budget</h2>
   <p>About 40 % of the die is the 40 pF loop-filter capacitor. It is MiM (metal-insulator-metal) on met3/met4, so it sits above the substrate but cannot share area with the strip below, which needs those layers for routing.</p></div>
   <div class="areabar" id="areabar"></div>
   <div class="arealist" id="arealist"></div>
 </section>
 
-<section>
-  <div class="sec-head"><div class="eyebrow">Signal flow</div><h2>How the loop works</h2>
+<section id="flow">
+  <div class="sec-head"><div class="eyebrow">05 · Signal flow</div><h2>How the loop works</h2>
   <p>The phase-frequency detector compares the reference with the VCO output divided by 8. It drives the charge pump, which pushes or pulls a tiny current into the loop filter. The filter voltage VCTRL steers the VCO until the divided output lines up with the reference in phase. Then VOUT = 8 × REF.</p></div>
-  <div class="diagram"><svg class="sch" id="sys" viewBox="0 0 760 230"></svg></div>
+  <div class="card diagram"><svg class="sch" id="sys" viewBox="0 0 760 230"></svg></div>
 </section>
 
 <section id="blocks">
-  <div class="sec-head"><div class="eyebrow">Blocks, left to right along the strip, then the top band</div><h2>Block plates</h2></div>
+  <div class="sec-head"><div class="eyebrow">06 · Blocks, left to right along the strip, then the top band</div><h2>Block plates</h2></div>
   <div id="plates"></div>
 </section>
 
-<section>
-  <div class="sec-head"><div class="eyebrow">Round 6 · closed loop on the extracted netlist</div><h2>How the silicon behaves</h2>
-  <p>Closed-loop transient simulations on the full extracted chip (layout capacitances included), across process, voltage, temperature and Monte Carlo. Every point passes contract v2.</p></div>
-  <div class="results">
-    <div><b class="pass">8 / 8 PASS</b><span>static PVT + Monte Carlo points</span></div>
-    <div><b>17.4–29.2 µs</b><span>lock time (limit 50 µs; schematic 9–16 µs)</span></div>
-    <div><b>262–833 µW</b><span>power (limit 1 mW)</span></div>
-    <div><b>0.59–0.92 V</b><span>VCTRL at lock (allowed 0.3–1.4 V)</span></div>
-    <div><b>≤ 0.12 mV</b><span>VCTRL ripple, std (limit 5 mV)</span></div>
-    <div><b>50.0–51.9 %</b><span>output duty cycle (45–55 %)</span></div>
-    <div><b>no slip</b><span>±50 mV supply step: 0.090 ref-cycle error, 1.27 µs recovery</span></div>
-    <div><b>−220.1 dB</b><span>VCO FoM, device noise (proxy VCO, not the extracted loop)</span></div>
+<section id="verify">
+  <div class="sec-head"><div class="eyebrow">07 · Verification status</div><h2>What is proven, what is open</h2></div>
+  <div class="ver">
+    <div class="card"><h3>✓ Verified</h3><ul>
+      <li><b>✓ Magic DRC, sky130A full style<span>DRCTOTAL 0, re-run on pruthapll.gds itself on 2026-10-23</span></b></li>
+      <li><b>✓ netgen LVS vs generator netlist<span>Circuits match uniquely</span></b></li>
+      <li><b>✓ Magic C-extraction<span>pruthapll_pex.spice, the netlist every round-6 sim ran on</span></b></li>
+      <li><b>✓ Closed-loop PVT on the extracted chip<span>8 / 8 static points PASS, incl. ff / 125 °C power-up lock</span></b></li>
+      <li><b>✓ ±50 mV supply step<span>no cycle slip, 0.090 ref-cycle peak error, 1.27 µs recovery</span></b></li>
+    </ul></div>
+    <div class="card open"><h3>◐ Proxy / partial · ○ Pending</h3><ul>
+      <li class="px"><b>◐ VCO device noise, calibrated γ<span>FoM −220.1 dB on the rank-calibrated proxy, not the extracted loop</span></b></li>
+      <li class="px"><b>◐ Monte Carlo depth<span>one extracted MC sample in round 6; schematic rounds ran eight</span></b></li>
+      <li><b>○ Device-noise jitter on the extracted netlist<span>night run stopped on memory; rerun at lower parallelism</span></b></li>
+      <li><b>○ KLayout DRC cross-check<span>sky130A_mr.drc deck not run yet; Magic is the only DRC so far</span></b></li>
+      <li><b>○ Antenna and density reports<span>normally run at SoC level, after fill</span></b></li>
+      <li><b>○ Measured Icp operating point<span>≈ 1.7 µA is an estimate from the bias resistor</span></b></li>
+    </ul></div>
   </div>
 </section>
 
@@ -162,6 +265,60 @@ footer{margin-top:48px;font-size:12.5px;color:var(--muted);display:grid;gap:6px}
 </div>
 
 <script>
+/* ---------- spec table ---------- */
+const SPEC=[
+ ["Multiplication ratio","all static points","8","8.00000","exact"],
+ ["Output frequency","REF 5–12.5 MHz","40–100 MHz","40, 80, 100 MHz locked","full range"],
+ ["Power","all corners","< 1 mW","262–833 µW","17 %"],
+ ["Area","outline","< 0.14 mm²","0.0575 mm²","59 %"],
+ ["Lock time","power-up","< 50 µs","17.4–29.2 µs","42 %"],
+ ["VCTRL at lock","all static points","0.3–1.4 V","0.59–0.92 V","0.29 V"],
+ ["VCTRL ripple","std, locked","< 5 mV","≤ 0.124 mV","97 %"],
+ ["Duty cycle","VOUT","45–55 %","50.0–51.9 %","3.1 pts"],
+ ["Supply step","±50 mV, tt, 100 MHz","no cycle slip","0 slips · 1.27 µs recovery","0.090 cycle"],
+ ["Transient jitter","deterministic","< 0.1 % UI","≤ 0.97 ps","≤ 0.004 % UI"],
+ ["VCO FoM *","device noise, 741 µW","≤ −217 dB","−220.1 dB","3.1 dB","proxy"]];
+document.getElementById("spectbl").innerHTML=SPEC.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td class="n">${r[2]}</td><td class="n">${r[3]}</td><td class="n">${r[4]}</td><td>${r[5]?`<span class="st warn">◐ Proxy</span>`:`<span class="st ok">✓ Verified</span>`}</td></tr>`).join("");
+
+/* ---------- charts ---------- */
+const R6=[["ss · 1.62 V · 125 °C",100,29.211,543.8,.8311,50.0],["ff · 1.98 V · 125 °C",40,17.387,528.9,.6403,51.56],["ff · 1.98 V · −40 °C",40,26.994,311.5,.5875,51.67],
+ ["ff · 125 °C",100,22.322,819.9,.8235,51.86],["fs · 1.98 V",100,27.194,833.2,.9186,50.62],["tt",40,24.592,261.6,.6325,51.1],["tt",100,28.247,602.4,.8423,50.72],["Monte Carlo #1",80,28.1,493.8,.7914,51.09]];
+const TRK=[{n:"Lock time, µs",lo:0,hi:55,ok:[0,50],i:2,f:v=>v.toFixed(1)},{n:"Power, µW",lo:0,hi:1100,ok:[0,1000],i:3,f:v=>Math.round(v)},
+ {n:"VCTRL at lock, V",lo:0,hi:1.8,ok:[.3,1.4],i:4,f:v=>v.toFixed(2)},{n:"Duty cycle, %",lo:40,hi:60,ok:[45,55],i:5,f:v=>v.toFixed(1)}];
+(()=>{const L=220,TW=176,G=16,top=36,rh=28,H=top+R6.length*rh+18;let s="";
+ TRK.forEach((t,k)=>{const x0=L+k*(TW+G),X=v=>x0+(v-t.lo)/(t.hi-t.lo)*TW,yb=top-10,hb=R6.length*rh;
+  s+=`<text x="${x0}" y="14" class="ct">${t.n}</text><rect x="${X(t.ok[0])}" y="${yb}" width="${X(t.ok[1])-X(t.ok[0])}" height="${hb}" class="band"/>`;
+  t.ok.forEach(v=>{if(v>t.lo)s+=`<line x1="${X(v)}" x2="${X(v)}" y1="${yb}" y2="${yb+hb}" class="lim"/>`});
+  [t.lo,...t.ok.filter(v=>v>t.lo)].forEach(v=>s+=`<text x="${X(v)}" y="${H-2}" class="ax" text-anchor="middle">${v}</text>`);
+  R6.forEach((r,j)=>{const y=top+j*rh;s+=`<line x1="${x0}" x2="${x0+TW}" y1="${y}" y2="${y}" class="trk"/><circle cx="${X(r[t.i])}" cy="${y}" r="5" fill="var(--cyan)"><title>${r[0]} ${r[1]} MHz: ${t.f(r[t.i])}</title></circle>`})});
+ R6.forEach((r,j)=>{const y=top+j*rh+4;s+=`<text x="0" y="${y}" class="rl">${r[0]}</text><text x="${L-16}" y="${y}" class="rl mu" text-anchor="end">${r[1]} MHz</text>`});
+ const e=document.getElementById("r6");e.setAttribute("viewBox",`0 0 ${L+4*TW+3*G} ${H}`);e.innerHTML=s})();
+
+(()=>{const X=k=>60+(k-1)/9*560,Y=j=>270-j/16*250;let s="";
+ [0,4,8,12,16].forEach(j=>s+=`<line x1="60" x2="620" y1="${Y(j)}" y2="${Y(j)}" class="grid"/><text x="50" y="${Y(j)+4}" class="ax" text-anchor="end">${j}</text>`);
+ [1,2,4,6,10].forEach(k=>s+=`<text x="${X(k)}" y="290" class="ax" text-anchor="middle">k=${k}</text>`);
+ s+=`<text x="16" y="145" class="ax" transform="rotate(-90 16 145)" text-anchor="middle">period jitter, ps</text>`;
+ s+=`<line x1="60" x2="620" y1="${Y(10)}" y2="${Y(10)}" class="lim"/><text x="616" y="${Y(10)-7}" class="ax" text-anchor="end" fill="var(--red)">budget 10 ps</text>`;
+ const D=[[1,14.6],[2,9.86],[4,6.53],[6,6.79],[10,5.14]],C=[[6,10.63],[10,7.59]];
+ s+=`<polyline points="${D.map(([k,j])=>X(k)+","+Y(j)).join(" ")}" fill="none" stroke="var(--mute)" stroke-width="1.6"/>`;
+ s+=`<polyline points="${C.map(([k,j])=>X(k)+","+Y(j)).join(" ")}" fill="none" stroke="var(--amber)" stroke-width="1.6" stroke-dasharray="5 4"/>`;
+ D.forEach(([k,j])=>s+=`<circle cx="${X(k)}" cy="${Y(j)}" r="4.5" fill="var(--mute)"><title>k=${k}, default: ${j} ps</title></circle><text x="${X(k)+(k===10?-8:8)}" y="${Y(j)+16}" class="ax"${k===10?' text-anchor="end"':""}>${j}</text>`);
+ C.forEach(([k,j])=>s+=`<circle cx="${X(k)}" cy="${Y(j)}" r="5" fill="var(--amber)"><title>k=${k}, calibrated: ${j} ps</title></circle><text x="${X(k)+(k===10?-8:8)}" y="${Y(j)-9}" class="ax" fill="var(--amber)"${k===10?' text-anchor="end"':""}>${j}</text>`);
+ document.getElementById("noise").innerHTML=s})();
+
+(()=>{const P=[[12,697.1,.908,"jit"],[8,711.0,.931,"jit"],[14,709.8,.871,"ok"],[15,722.4,.908,"jit"],[3,741.1,.887,"win"],[0,759.4,.852,"ok"],[11,797.9,.828,"bad"],[4,814.1,.867,"ok"],
+  [10,942.5,.836,"bad"],[7,917.3,.765,"bad"],[5,993.9,.72,"bad"],[9,1100.7,.742,"bad"],[6,1127.3,.635,"bad"],[2,1185.3,.684,"bad"],[1,1256.9,.635,"bad"]];
+ const X=p=>70+(p-650)/650*550,Y=r=>290-(r-.6)/.36*270,col={ok:"var(--ok)",jit:"var(--amber)",bad:"var(--red)",win:"var(--cyan)"};let s="";
+ for(let r=.6;r<=.961;r+=.06)s+=`<line x1="70" x2="620" y1="${Y(r)}" y2="${Y(r)}" class="grid"/><text x="60" y="${Y(r)+4}" class="ax" text-anchor="end">${r.toFixed(2)}</text>`;
+ for(let p=700;p<=1300;p+=100)s+=`<text x="${X(p)}" y="310" class="ax" text-anchor="middle">${p}</text>`;
+ s+=`<text x="345" y="328" class="ax" text-anchor="middle">VCO power, µW</text><text x="14" y="155" class="ax" transform="rotate(-90 14 155)" text-anchor="middle">jitter / limit</text>`;
+ s+=`<line x1="70" x2="620" y1="${Y(.9)}" y2="${Y(.9)}" class="lim" style="stroke:var(--amber)"/><text x="616" y="${Y(.9)-6}" class="ax" text-anchor="end" fill="var(--amber)">jitter wall 0.90</text>`;
+ s+=`<line x1="${X(900)}" x2="${X(900)}" y1="20" y2="290" class="lim"/><text x="${X(900)+5}" y="30" class="ax" fill="var(--red)">power wall 900 µW</text>`;
+ P.forEach(([i,p,r,k])=>s+=(k==="win"?`<circle cx="${X(p)}" cy="${Y(r)}" r="10" fill="none" stroke="var(--cyan)" stroke-width="1.6"/>`:"")+
+  `<circle cx="${X(p)}" cy="${Y(r)}" r="${k==="win"?6.5:5}" fill="${col[k]}"><title>#${i}: ${p} µW, ${r} × limit</title></circle><text x="${X(p)+(i===12||i===8?-9:i===3?12:9)}" y="${Y(r)+(i===15?-9:i===3?14:4)}" class="ax"${i===12||i===8?' text-anchor="end"':""}${k==="win"?' fill="var(--cyan)"':""}>#${i}</text>`);
+ document.getElementById("sweet").innerHTML=s})();
+
+/* ---------- chip viewer ---------- */
 const LAYERS=[["nwell","#5d6b8a"],["diff","#3fbf6a"],["poly","#e5484d"],["li1","#a0a7b4"],["met1","#4f8ff7"],["met2","#d36be0"],["met3","#27c6c6"],["met4","#e8d44d"],["capm (MiM)","#f5a524"]];
 document.getElementById("legend").innerHTML=LAYERS.map(([n,c])=>`<span><i style="background:${c}"></i>${n}</span>`).join("");
 
@@ -194,11 +351,14 @@ BLOCKS.forEach(b=>{
   chip.appendChild(el);
 });
 
+document.getElementById("bidx").innerHTML=BLOCKS.map(b=>`<a href="#${b.id}"><i style="background:${b.col}"></i>${b.name}</a>`).join("");
+
 // area budget
 const used=BLOCKS.reduce((s,b)=>s+area(b),0), rest=CHIP_AREA-used;
-const parts=[...BLOCKS.map(b=>({n:b.short,a:area(b),c:b.col})),{n:"routing + spacing",a:rest,c:"#9ca3af"}].sort((x,y)=>y.a-x.a);
+const parts=[...BLOCKS.map(b=>({n:b.short,a:area(b),c:b.col})),{n:"routing + spacing",a:rest,c:"#3a4357"}].sort((x,y)=>y.a-x.a);
 document.getElementById("areabar").innerHTML=parts.map(p=>`<div style="flex:${p.a} 0 0;background:${p.c}" title="${p.n}">${p.a/CHIP_AREA>.06?p.n:""}</div>`).join("");
 document.getElementById("arealist").innerHTML=parts.map(p=>`<div><span><i style="background:${p.c}"></i>${p.n}</span><span class="mono">${fmt(p.a,0)} µm² · ${fmt(p.a/CHIP_AREA*100)} %</span></div>`).join("");
+
 
 /* ---------- schematic primitives (local coords, y down) ---------- */
 const W=(...p)=>`<polyline class="w" points="${p.map(q=>q.join(",")).join(" ")}"/>`;
@@ -232,17 +392,17 @@ function dff(x,y,lab){ // 64x76 box; pins: D (x,y+18) CK (x,y+56) Q (x+64,y+18) 
 
 /* ---------- system ---------- */
 document.getElementById("sys").innerHTML=
- W([20,70],[80,70])+arrow(80,70)+T(20,62,"REF 5–12.5 MHz","net")+
- box(80,40,110,90,"PFD","2 DFF + NAND reset")+
+ W([20,70],[80,70])+arrow(80,70)+T(20,62,"REF","net")+T(20,88,"5–12.5","dev")+T(20,100,"MHz","dev")+
+ box(80,40,110,90,"PFD","2 DFF + NAND")+
  W([190,62],[240,62])+arrow(240,62)+T(200,56,"UP","net")+W([190,108],[240,108])+arrow(240,108)+T(200,102,"DN","net")+
  box(240,40,110,90,"Charge pump","≈1.7 µA (est.)")+
  W([350,85],[420,85])+T(362,78,"VCTRL","net")+dot(400,85)+W([400,85],[400,140])+
- box(345,140,110,60,"Loop filter","R1 54 k · C1 40 p · C2 2.7 p")+
+ box(315,140,170,60,"Loop filter","R1 54k · C1 40p · C2 2.7p")+
  W([420,85],[480,85])+arrow(480,85)+
- box(480,40,120,90,"VCO","7-stage ring, 40–100 MHz")+
+ box(480,40,120,90,"VCO","7-stage ring")+
  W([600,85],[740,85])+arrow(740,85)+T(650,78,"VOUT","net")+dot(690,85)+
  W([690,85],[690,190],[600,190])+arrow(600,190,-1)+box(500,165,100,50,"÷ 8","3 ripple DFF")+
- W([500,190],[40,190],[40,110],[80,110])+arrow(80,110)+T(250,184,"FB = VOUT / 8","net");
+ W([500,190],[40,190],[40,110],[80,110])+arrow(80,110)+T(60,184,"FB = VOUT / 8","net");
 
 /* ---------- block schematics ---------- */
 const S={};

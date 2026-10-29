@@ -155,6 +155,11 @@ svg text{font-family:var(--mono);fill:var(--mute)}
 .sign b{display:block;font-size:28px;font-weight:800;letter-spacing:-.02em}
 .sign span{font-family:var(--mono);font-size:11px;color:var(--mute);text-transform:uppercase;letter-spacing:.08em}
 .sign em{font-style:normal;font-family:var(--mono);font-size:11px;color:var(--ok);display:block;margin-top:4px}
+.sign .px em{color:var(--amber)}
+.legend{margin-top:12px;font-size:12px;color:var(--mute)}
+.chapters{display:flex;flex-wrap:wrap;gap:6px 14px;padding:18px 0;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:12px}
+.chapters a{color:var(--mute);text-decoration:none;padding:4px 0;border-bottom:1px solid transparent}
+.chapters a:hover,.chapters a:focus-visible{color:var(--ink);border-color:var(--coral);outline:none}
 .honest{margin-top:28px;border:1px solid #4a3a1a;background:#151007;border-radius:14px;padding:18px 20px;color:#e9d9b0;font-size:15px}
 .honest b{color:var(--amber);font-family:var(--mono);font-size:12px;letter-spacing:.12em;display:block;margin-bottom:4px}
 .cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:36px}
@@ -218,7 +223,7 @@ footer{padding:60px 0 80px;color:var(--dim);font-family:var(--mono);font-size:12
   <div class="wrap">
     <span class="lockpill"><span class="dot" id="lockdot"></span><span id="locktxt">acquiring lock…</span></span>
     <h1>36 nights.<br><span class="grad">One clock.</span><br><span class="thin">Zero shortcuts.</span></h1>
-    <p class="lede">How a 2020 internship schematic became a signed-off 0.0575&nbsp;mm² SkyWater 130&nbsp;nm phase-locked loop. One engineer, a crew of AI models, and thousands of transistor-level simulations running every night, all closing in on one sweet spot.</p>
+    <p class="lede">How a 2020 internship schematic became a DRC- and LVS-clean 0.0575&nbsp;mm² SkyWater 130&nbsp;nm phase-locked loop. One engineer, a crew of AI models, and thousands of transistor-level simulations running every night, all closing in on one sweet spot.</p>
     <div class="herostats">
       <div><b data-count="3339">3,339</b><span>SPICE decks</span></div>
       <div><b data-count="250">250</b><span>commits</span></div>
@@ -230,6 +235,7 @@ footer{padding:60px 0 80px;color:var(--dim);font-family:var(--mono);font-size:12
 </header>
 
 <main>
+<div class="wrap"><nav class="chapters" aria-label="Chapters"><a href="#timeline">01 Arc</a><a href="#crew">02 Crew</a><a href="#machine">03 Machine</a><a href="#noise">04 Noise</a><a href="#sweet">05 Sweet spot</a><a href="#shrink">06 Squeeze</a><a href="#signoff">07 Sign-off</a><a href="#compare">08 Then vs now</a></nav></div>
 <section id="timeline">
   <div class="wrap">
     <div class="k">01 / The arc</div>
@@ -344,7 +350,7 @@ footer{padding:60px 0 80px;color:var(--dim);font-family:var(--mono);font-size:12
         <span><i style="background:var(--red)"></i>10 ps budget at 100 MHz</span>
       </div>
       <svg viewBox="0 0 760 330" role="img" aria-label="Period jitter versus VCO current scale k"></svg>
-      <p class="cap">Period jitter vs VCO current scale k. Calibrated noise made things <em>worse</em>: k=6 went from 6.79 to 10.63&nbsp;ps. The design that shipped is ×1.5 (p1n3) plus 10&nbsp;pF bias-node caps. Those caps gave the same gain as a 1.2&nbsp;mW bias fix at zero extra power. It passes at every corner, with a 4% worst-case margin.</p>
+      <p class="cap">Period jitter vs VCO current scale k. Calibrated noise made things <em>worse</em>: k=6 went from 6.79 to 10.63&nbsp;ps. Bias-node caps (10&nbsp;pF, then 15&nbsp;pF) gave the same gain as a 1.2&nbsp;mW bias fix at zero extra power; with a ×1.5 VCO (p1n3) that passed every corner with a 4% worst-case margin. The layout search later settled on p1n5 with 17.1&nbsp;pF caps.</p>
     </div>
   </div>
 </section>
@@ -393,16 +399,17 @@ footer{padding:60px 0 80px;color:var(--dim);font-family:var(--mono);font-size:12
     <h2 class="rise">Extracted. Shaken.<br><span class="grad">Locked.</span></h2>
     <p class="lede">The final checks ran on the real extracted netlist, with every parasitic resistor and capacitor in: 8 of 8 PVT and Monte Carlo points passed. A ±50&nbsp;mV supply step caused no cycle slip.</p>
     <div class="sign">
-      <div><b>17–29 µs</b><span>lock time</span><em>limit 50 µs</em></div>
-      <div><b>262–833 µW</b><span>total power</span><em>limit 1 mW</em></div>
-      <div><b>50.0–51.9%</b><span>duty cycle</span><em>limit 45–55%</em></div>
-      <div><b>−220.1 dB</b><span>FoM (VCO)</span><em>limit ≤ −217</em></div>
-      <div><b>0.59–0.92 V</b><span>Vctrl</span><em>window 0.3–1.4 V</em></div>
-      <div><b>≤ 0.12 mV</b><span>Vctrl ripple</span><em>quiet</em></div>
-      <div><b>0.09 cyc</b><span>supply-step phase error</span><em>recovers in 1.27 µs</em></div>
-      <div><b>427</b><span>devices + 24 MiM caps</span><em>DRC / LVS clean</em></div>
+      <div><b>17–29 µs</b><span>lock time</span><em>✓ limit 50 µs</em></div>
+      <div><b>262–833 µW</b><span>total power</span><em>✓ limit 1 mW</em></div>
+      <div><b>50.0–51.9%</b><span>duty cycle</span><em>✓ limit 45–55%</em></div>
+      <div class="px"><b>−220.1 dB</b><span>FoM (VCO)</span><em>◐ proxy model · limit ≤ −217</em></div>
+      <div><b>0.59–0.92 V</b><span>Vctrl</span><em>✓ window 0.3–1.4 V</em></div>
+      <div><b>≤ 0.12 mV</b><span>Vctrl ripple</span><em>✓ limit 5 mV</em></div>
+      <div><b>0.09 cyc</b><span>supply-step phase error</span><em>✓ recovers in 1.27 µs</em></div>
+      <div><b>427</b><span>devices + 24 MiM caps</span><em>✓ Magic DRC / LVS clean</em></div>
     </div>
-    <div class="honest"><b>WHAT'S STILL OPEN</b>The −220.1&nbsp;dB FoM comes from the calibrated proxy model, not yet from device noise on the fully extracted loop. That re-run is the one that crashed the Mac. It's queued again at three sims at a time. DRC is Magic-only so far; KLayout cross-check and antenna and density reports are still to do. This page will be updated when they land.</div>
+    <p class="legend mono">✓ verified on the extracted netlist · ◐ proxy / partial · ○ pending</p>
+    <div class="honest"><b>◐ PROXY · ○ STILL PENDING</b>The −220.1&nbsp;dB FoM comes from the calibrated proxy model, not yet from device noise on the fully extracted loop. That re-run is the one that crashed the Mac. It's queued again at three sims at a time. DRC is Magic-only so far; KLayout cross-check and antenna and density reports are still to do. This page will be updated when they land.</div>
   </div>
 </section>
 
@@ -410,7 +417,7 @@ footer{padding:60px 0 80px;color:var(--dim);font-family:var(--mono);font-size:12
   <div class="wrap">
     <div class="k">08 / Then vs now</div>
     <h2 class="rise">2020 baseline vs<br><span class="grad">pruthapll today.</span></h2>
-    <p class="lede">The baseline is the 2020 internship design, re-simulated on SKY130 in September with the same test bench. The final column is the signed-off layout with parasitics extracted. Not every row is a win. Lock time and peak power were traded away to meet the noise budget.</p>
+    <p class="lede">The baseline is the 2020 internship design, re-simulated on SKY130 in September with the same test bench. The final column is the DRC- and LVS-clean layout with parasitics extracted. Not every row is a win. Lock time and peak power were traded away to meet the noise budget.</p>
     <div class="scorebar rise">
       <div><b>8</b><span>improved</span></div>
       <div><b>5</b><span>new capability</span></div>
@@ -421,14 +428,14 @@ footer{padding:60px 0 80px;color:var(--dim);font-family:var(--mono);font-size:12
       <thead><tr><th>Metric</th><th>2020 baseline</th><th>pruthapll final</th><th>Change</th></tr></thead>
       <tbody>
         <tr class="grp"><td colspan="4">Silicon</td></tr>
-        <tr><td>Process</td><td>osu180 (2020)</td><td>SkyWater SKY130</td><td><span class="tag new">open PDK, tapeout-ready</span></td></tr>
+        <tr><td>Process</td><td>osu180 (2020)</td><td>SkyWater SKY130</td><td><span class="tag new">open PDK</span></td></tr>
         <tr><td>Physical layout</td><td>Loop filter never laid out (osu180 had no usable caps)</td><td>Full chip, Magic DRC + Netgen LVS clean</td><td><span class="tag new">new</span></td></tr>
         <tr><td>Loop filter C1 / C2 / R1</td><td>200&nbsp;pF / 500&nbsp;pF / 500&nbsp;Ω</td><td>40&nbsp;pF / 2.67&nbsp;pF / 54&nbsp;kΩ</td><td><span class="tag up">−94% capacitance</span></td></tr>
         <tr><td>Area</td><td>0.098–0.128&nbsp;mm² <small>caps alone, estimated</small></td><td>0.0575&nbsp;mm² <small>whole chip, 430 × 134 µm</small></td><td><span class="tag up">41–55% smaller, all-in</span></td></tr>
         <tr class="grp"><td colspan="4">Performance</td></tr>
         <tr><td>Period jitter, deterministic <small>at 100 MHz</small></td><td>23.8&nbsp;ps</td><td>0.05–0.14&nbsp;ps</td><td><span class="tag up">≥170× lower</span></td></tr>
         <tr><td>Period jitter, device noise</td><td>never measured <small>("future work")</small></td><td>&lt; 10&nbsp;ps with calibrated γ <small>proxy model</small></td><td><span class="tag new">new</span></td></tr>
-        <tr><td>FoM</td><td>not computed</td><td>−220.1&nbsp;dB <small>published median −216.6</small></td><td><span class="tag up">beats median by 3.5 dB</span></td></tr>
+        <tr><td>FoM</td><td>not computed</td><td>−220.1&nbsp;dB <small>proxy VCO · published median −216.6</small></td><td><span class="tag up">beats median by 3.5 dB (proxy)</span></td></tr>
         <tr><td>Duty cycle</td><td>spec 48–52%</td><td>50.0–51.9% <small>across all PVT</small></td><td><span class="tag up">in spec everywhere</span></td></tr>
         <tr><td>Lock time</td><td>3.9–18.3&nbsp;µs <small>typical corner only</small></td><td>17.4–29.2&nbsp;µs <small>all PVT, extracted</small></td><td><span class="tag dn">slower; limit is 50 µs</span></td></tr>
         <tr><td>Power</td><td>538–575&nbsp;µW <small>typical corner only</small></td><td>262–833&nbsp;µW <small>across PVT</small></td><td><span class="tag dn">higher at fast corners; limit is 1 mW</span></td></tr>
@@ -441,9 +448,9 @@ footer{padding:60px 0 80px;color:var(--dim);font-family:var(--mono);font-size:12
       </tbody>
     </table>
     </div>
-    <p class="cap mute" style="margin-top:12px;font-size:14px">Baseline numbers: <span class="mono">docs/exp022-ppa-characterization.md</span> and <span class="mono">docs/pareto-frontier-classical.md</span>. Both columns report deterministic jitter as steady-state period standard deviation, but from two generations of the analyzer script. Final numbers: round 6 on the extracted chip and the S9 sign-off pack.</p>
+    <p class="cap mute" style="margin-top:12px;font-size:14px">Baseline numbers: <span class="mono">docs/exp022-ppa-characterization.md</span> and <span class="mono">docs/pareto-frontier-classical.md</span>. Both columns report deterministic jitter as steady-state period standard deviation, but from two generations of the analyzer script. Final numbers: round 6 on the extracted chip and the S9 sign-off pack v1; the extracted-netlist device-noise run, KLayout DRC and antenna/density checks are still pending.</p>
     <div class="cta">
-      <a class="btn" href="/pjsilicon/pruthapll/">Explore the layout atlas →</a>
+      <a class="btn" href="/pjsilicon/pruthapll/">Read the datasheet →</a>
       <a class="btn ghost" href="/apps.html#silicon">More things we've built</a>
     </div>
   </div>
