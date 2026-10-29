@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>pruthapll Layout Atlas</title>
+<meta name="description" content="pjsilicon pruthapll: a SKY130 ×8 charge-pump PLL, 0.0575 mm², DRC and LVS clean. Block-by-block layout atlas with circuits and extracted-netlist results.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: a chip-viewer hero (dark "scope" panel in both themes) over a reading column of block plates, each plate = crop | facts | schematic. */
+:root{
+  --bg:#f3f4f1; --surface:#ffffff; --ink:#1b2230; --muted:#5c6575; --rule:#d9dcd6;
+  --accent:#c2410c; --net:#0f766e; --scope:#0e1420; --scope-ink:#cfd6e4;
+  --f-display:"IBM Plex Sans Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#12161d; --surface:#1a2029; --ink:#e4e8ef; --muted:#97a0b0; --rule:#2c3440;
+  --accent:#fb923c; --net:#2dd4bf; --scope:#0b0f17; --scope-ink:#cfd6e4; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12161d; --surface:#1a2029; --ink:#e4e8ef; --muted:#97a0b0; --rule:#2c3440;
+  --accent:#fb923c; --net:#2dd4bf; --scope:#0b0f17; --scope-ink:#cfd6e4; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15px/1.6 var(--f-body);margin:0}
+.wrap{max-width:1120px;margin:0 auto;padding-inline:20px;padding-block:28px 64px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(28px,4.4vw,44px);font-weight:700;letter-spacing:-.01em}
+h2{font-size:26px;font-weight:600}
+h3{font-size:17px;font-weight:600}
+.eyebrow{font:500 12px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+p{margin:0;max-width:68ch}
+header{display:grid;gap:10px;margin-bottom:22px}
+.lede{color:var(--muted)}
+.stats{display:flex;flex-wrap:wrap;gap:0;border:1px solid var(--rule);background:var(--surface);margin-top:8px}
+.stat{padding:10px 16px;border-right:1px solid var(--rule);min-width:0;flex:1 1 130px}
+.stat:last-child{border-right:0}
+.stat b{display:block;font:600 19px var(--f-mono);font-variant-numeric:tabular-nums}
+.stat span{font-size:12px;color:var(--muted)}
+/* scope panel */
+.scope{background:var(--scope);color:var(--scope-ink);padding:14px;margin-block:18px 10px}
+.scope-head{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;font:12px var(--f-mono);margin-bottom:10px;color:#8b95a8}
+.chip{position:relative;width:100%;overflow:hidden}
+.chip img{display:block;width:100%;height:auto}
+.hot{position:absolute;border:1px dashed rgba(255,255,255,.35);background:transparent;cursor:pointer;padding:0;transition:background .15s,border-color .15s}
+.hot:hover,.hot:focus-visible,.hot.on{background:rgba(251,146,60,.18);border:1.5px solid #fb923c;outline:none}
+.hot span{position:absolute;left:3px;top:2px;font:500 10px var(--f-mono);color:#fff;background:rgba(14,20,32,.8);padding:0 4px;white-space:nowrap;pointer-events:none}
+.hot.small span{top:auto;bottom:100%}
+.axis{display:flex;justify-content:space-between;font:11px var(--f-mono);color:#6b7487;margin-top:4px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font:11px var(--f-mono);margin-top:10px;color:#a9b2c3}
+.legend i{display:inline-block;width:10px;height:10px;margin-right:5px;vertical-align:-1px}
+.hint{font-size:13px;color:var(--muted)}
+/* area bar */
+.areabar{display:flex;height:26px;border:1px solid var(--rule);margin-top:10px;overflow:hidden}
+.areabar div{min-width:0;font:10px var(--f-mono);color:#fff;display:flex;align-items:center;padding-left:4px;white-space:nowrap;overflow:hidden}
+.arealist{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:4px 18px;margin-top:8px;font-size:13px}
+.arealist div{display:flex;justify-content:space-between;gap:8px;border-bottom:1px dotted var(--rule)}
+.arealist i{display:inline-block;width:9px;height:9px;margin-right:6px}
+section{margin-top:46px}
+.sec-head{display:grid;gap:6px;margin-bottom:16px;border-top:2px solid var(--ink);padding-top:12px}
+/* system diagram */
+.diagram{background:var(--surface);border:1px solid var(--rule);padding:12px;overflow-x:auto}
+svg.sch{display:block;width:100%;height:auto;min-width:520px}
+svg.sch text{font-family:var(--f-mono);font-size:11px;fill:var(--ink)}
+svg.sch .net{fill:var(--net);font-weight:500}
+svg.sch .dev{fill:var(--muted);font-size:10px}
+svg.sch .big{font-size:13px;font-weight:500}
+svg.sch .w{stroke:var(--ink);stroke-width:1.4;fill:none;stroke-linejoin:round;stroke-linecap:round}
+svg.sch .box{stroke:var(--ink);stroke-width:1.4;fill:var(--surface)}
+svg.sch .acc{stroke:var(--accent);stroke-width:1.8;fill:none}
+svg.sch .dot{fill:var(--ink)}
+svg.sch .rail{stroke:var(--muted);stroke-width:1.2;stroke-dasharray:4 3}
+/* block plates */
+.plate{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:0;background:var(--surface);border:1px solid var(--rule);margin-top:18px;scroll-margin-top:16px}
+.plate:target,.plate.flash{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}
+.plate .crop{background:var(--scope);display:flex;flex-direction:column;justify-content:center;padding:10px;gap:6px;min-width:0}
+.plate .crop img{max-height:420px;width:auto;max-width:100%;margin:0 auto;display:block}
+.plate .crop figcaption{font:11px var(--f-mono);color:#8b95a8;text-align:center}
+.plate .body{padding:18px 20px;display:grid;gap:12px;align-content:start;min-width:0}
+.facts{display:grid;grid-template-columns:auto 1fr;gap:2px 14px;font-size:13px;margin:0}
+.facts dt{color:var(--muted)}
+.facts dd{margin:0;font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.tag{display:inline-block;font:500 11px var(--f-mono);border:1px solid var(--accent);color:var(--accent);padding:0 6px;margin-right:6px}
+.plate .sch-wrap{grid-column:1/-1;border-top:1px solid var(--rule);padding:12px;overflow-x:auto}
+table.dev{border-collapse:collapse;font-size:12.5px;width:100%}
+table.dev th,table.dev td{text-align:left;padding:3px 8px 3px 0;border-bottom:1px solid var(--rule)}
+table.dev th{font-weight:500;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+table.dev td.mono{white-space:nowrap}
+.tblwrap{overflow-x:auto}
+.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:0;border:1px solid var(--rule);background:var(--surface)}
+.results div{padding:12px 14px;border-bottom:1px solid var(--rule);border-right:1px solid var(--rule)}
+.results b{font:600 16px var(--f-mono);display:block}
+.results span{font-size:12px;color:var(--muted)}
+.pass{color:var(--net);font-weight:600}
+footer{margin-top:48px;font-size:12.5px;color:var(--muted);display:grid;gap:6px}
+@media (max-width:760px){.plate{grid-template-columns:1fr}.stat{flex-basis:45%}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+.sitebar{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:center;font:500 13px var(--f-mono);padding-bottom:14px;margin-bottom:18px;border-bottom:1px solid var(--rule)}
+.sitebar a{color:var(--muted);text-decoration:none}.sitebar a:hover{color:var(--accent)}
+</style>
+</head><body>
+
+<div class="wrap">
+<nav class="sitebar" aria-label="Site"><a href="/">AiHomeCloud</a><span aria-hidden="true">/</span><a href="/apps.html#silicon">Other things we've built</a><span aria-hidden="true">/</span><span>pruthapll</span></nav>
+<header>
+  <div class="eyebrow">pjsilicon · SKY130 · 1.8 V · ×8 charge-pump PLL · dev name pll_s7c3_k3</div>
+  <h1>pruthapll Layout Atlas</h1>
+  <p class="lede">The extracted, DRC and LVS clean layout of the ×8 charge-pump PLL, block by block. Each block shows its silicon crop, its footprint, the transistor-level circuit and what it does in the loop. Click any block on the chip to jump to it.</p>
+  <div class="stats">
+    <div class="stat"><b>430 × 134 µm</b><span>die outline</span></div>
+    <div class="stat"><b>0.0575 mm²</b><span>area (contract &lt; 0.14)</span></div>
+    <div class="stat"><b>≤ 833 µW</b><span>worst-case power, extracted</span></div>
+    <div class="stat"><b>×8</b><span>5–12.5 MHz in → 40–100 MHz out</span></div>
+    <div class="stat"><b>17–29 µs</b><span>lock time, extracted</span></div>
+  </div>
+</header>
+
+<div class="scope">
+  <div class="scope-head"><span>pruthapll.gds · flat top cell</span><span>y = 0 at strip top · units µm</span></div>
+  <div class="chip" id="chip"><img src="img/full.png" alt="Full PLL layout: MiM loop-filter capacitor array across the top, transistor strip along the bottom" width="2600" height="818"></div>
+  <div class="axis"><span>0</span><span>100</span><span>200</span><span>300</span><span>430 µm</span></div>
+  <div class="legend" id="legend"></div>
+</div>
+<p class="hint">Dashed outlines mark each block's device-layer bounding box. Wiring between blocks runs on met3 (cyan) and met4 (yellow).</p>
+
+<section>
+  <div class="sec-head"><div class="eyebrow">Where the area goes</div><h2>Floorplan budget</h2>
+  <p>About 40 % of the die is the 40 pF loop-filter capacitor. It is MiM (metal-insulator-metal) on met3/met4, so it sits above the substrate but cannot share area with the strip below, which needs those layers for routing.</p></div>
+  <div class="areabar" id="areabar"></div>
+  <div class="arealist" id="arealist"></div>
+</section>
+
+<section>
+  <div class="sec-head"><div class="eyebrow">Signal flow</div><h2>How the loop works</h2>
+  <p>The phase-frequency detector compares the reference with the VCO output divided by 8. It drives the charge pump, which pushes or pulls a tiny current into the loop filter. The filter voltage VCTRL steers the VCO until the divided output lines up with the reference in phase. Then VOUT = 8 × REF.</p></div>
+  <div class="diagram"><svg class="sch" id="sys" viewBox="0 0 760 230"></svg></div>
+</section>
+
+<section id="blocks">
+  <div class="sec-head"><div class="eyebrow">Blocks, left to right along the strip, then the top band</div><h2>Block plates</h2></div>
+  <div id="plates"></div>
+</section>
+
+<section>
+  <div class="sec-head"><div class="eyebrow">Round 6 · closed loop on the extracted netlist</div><h2>How the silicon behaves</h2>
+  <p>Closed-loop transient simulations on the full extracted chip (layout capacitances included), across process, voltage, temperature and Monte Carlo. Every point passes contract v2.</p></div>
+  <div class="results">
+    <div><b class="pass">8 / 8 PASS</b><span>static PVT + Monte Carlo points</span></div>
+    <div><b>17.4–29.2 µs</b><span>lock time (limit 50 µs; schematic 9–16 µs)</span></div>
+    <div><b>262–833 µW</b><span>power (limit 1 mW)</span></div>
+    <div><b>0.59–0.92 V</b><span>VCTRL at lock (allowed 0.3–1.4 V)</span></div>
+    <div><b>≤ 0.12 mV</b><span>VCTRL ripple, std (limit 5 mV)</span></div>
+    <div><b>50.0–51.9 %</b><span>output duty cycle (45–55 %)</span></div>
+    <div><b>no slip</b><span>±50 mV supply step: 0.090 ref-cycle error, 1.27 µs recovery</span></div>
+    <div><b>−220.1 dB</b><span>VCO FoM, device noise (proxy VCO, not the extracted loop)</span></div>
+  </div>
+</section>
+
+<footer>
+  <div>Device count from the extracted netlist: 195 nfet_01v8, 105 pfet_01v8, 80 pfet_01v8_hvt and 20 special_nfet (standard cells), 27 xhigh_po resistors, 24 MiM capacitors.</div>
+  <div>Images are rendered straight from the GDS layers (nwell, diff, poly, li1, met1–met4, capm); vias are omitted for clarity. Block outlines come from device-layer bounding boxes; the circuit for each block is drawn from the generator netlist (vco_cs.py, gen_pll.py preset p1n5).</div>
+</footer>
+</div>
+
+<script>
+const LAYERS=[["nwell","#5d6b8a"],["diff","#3fbf6a"],["poly","#e5484d"],["li1","#a0a7b4"],["met1","#4f8ff7"],["met2","#d36be0"],["met3","#27c6c6"],["met4","#e8d44d"],["capm (MiM)","#f5a524"]];
+document.getElementById("legend").innerHTML=LAYERS.map(([n,c])=>`<span><i style="background:${c}"></i>${n}</span>`).join("");
+
+// full image window (µm): x -1 .. 430.51, y -65.21 .. 70.57
+const WIN={x0:-1,x1:430.51,y0:-65.21,y1:70.57}, CHIP_AREA=429.51*133.78;
+const BLOCKS=[
+ {id:"xmin",name:"Minimum-current device",short:"xmin",bb:[1,-63.2,12.5,-0.3],col:"#64748b"},
+ {id:"bias",name:"VCO bias column",short:"bias",bb:[12,-58.3,31.9,-5.1],col:"#0891b2"},
+ {id:"ring",name:"7-stage ring oscillator",short:"ring",bb:[34,-58.3,112.4,-5.1],col:"#2563eb"},
+ {id:"buffer",name:"VCO output buffer",short:"buf",bb:[112,-63.9,125.6,-0.3],col:"#7c3aed"},
+ {id:"dnb",name:"NB bias decap",short:"NB decap",bb:[125.2,-64,192.7,-0.3],col:"#16a34a"},
+ {id:"dpb",name:"PB bias decap",short:"PB decap",bb:[192.2,-64,255.7,-0.3],col:"#65a30d"},
+ {id:"digital",name:"PFD and ÷8 divider",short:"PFD ÷8",bb:[259,-12.6,316.4,-9.4],col:"#db2777"},
+ {id:"cp",name:"Charge pump, bias and R1",short:"CP + R1",bb:[320.1,-27.8,398.4,-2.3],col:"#dc2626"},
+ {id:"c1",name:"Loop-filter capacitor C1",short:"C1 40 pF",bb:[45.76,3.96,395.32,69.37],col:"#ea580c"},
+ {id:"c2",name:"Ripple capacitor C2",short:"C2",bb:[400.62,4.1,426.25,57.36],col:"#ca8a04"}];
+const dims=b=>({w:b.bb[2]-b.bb[0],h:b.bb[3]-b.bb[1]});
+const area=b=>{const d=dims(b);return d.w*d.h};
+const fmt=(v,n=1)=>v.toLocaleString("en-US",{maximumFractionDigits:n,minimumFractionDigits:n});
+
+// hotspots
+const chip=document.getElementById("chip");
+BLOCKS.forEach(b=>{
+  const W=WIN.x1-WIN.x0,H=WIN.y1-WIN.y0,[a,y0,c,y1]=b.bb;
+  const el=document.createElement("button");
+  el.className="hot"+((y1-y0)<10?" small":""); el.id="hot-"+b.id; el.setAttribute("aria-label",b.name);
+  Object.assign(el.style,{left:((a-WIN.x0)/W*100)+"%",top:((WIN.y1-y1)/H*100)+"%",width:((c-a)/W*100)+"%",height:(Math.max(y1-y0,2)/H*100)+"%"});
+  el.innerHTML=`<span>${b.short}</span>`;
+  el.onclick=()=>{const p=document.getElementById(b.id);p.scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"start"});p.classList.add("flash");setTimeout(()=>p.classList.remove("flash"),1600)};
+  chip.appendChild(el);
+});
+
+// area budget
+const used=BLOCKS.reduce((s,b)=>s+area(b),0), rest=CHIP_AREA-used;
+const parts=[...BLOCKS.map(b=>({n:b.short,a:area(b),c:b.col})),{n:"routing + spacing",a:rest,c:"#9ca3af"}].sort((x,y)=>y.a-x.a);
+document.getElementById("areabar").innerHTML=parts.map(p=>`<div style="flex:${p.a} 0 0;background:${p.c}" title="${p.n}">${p.a/CHIP_AREA>.06?p.n:""}</div>`).join("");
+document.getElementById("arealist").innerHTML=parts.map(p=>`<div><span><i style="background:${p.c}"></i>${p.n}</span><span class="mono">${fmt(p.a,0)} µm² · ${fmt(p.a/CHIP_AREA*100)} %</span></div>`).join("");
+
+/* ---------- schematic primitives (local coords, y down) ---------- */
+const W=(...p)=>`<polyline class="w" points="${p.map(q=>q.join(",")).join(" ")}"/>`;
+const dot=(x,y)=>`<circle class="dot" cx="${x}" cy="${y}" r="2.6"/>`;
+const T=(x,y,s,cls="",anchor="start")=>`<text x="${x}" y="${y}" class="${cls}" text-anchor="${anchor}">${s}</text>`;
+// MOSFET: body centre (x,y). terminals: top (x+10,y-25), bottom (x+10,y+25), gate (x-25,y). m=-1 mirrors (gate on right).
+function fet(x,y,p,m=1){
+  const g=`<line class="w" x1="-8" y1="-12" x2="-8" y2="12"/><line class="w" x1="-3" y1="-14" x2="-3" y2="14"/>`+
+    W([-3,-10],[10,-10],[10,-25])+W([-3,10],[10,10],[10,25])+
+    (p?`<circle class="w" cx="-11.5" cy="0" r="3.2"/>`+W([-25,0],[-14.7,0]):W([-25,0],[-8,0]))+
+    (p?"":`<polyline class="w" points="2,7 -3,10 2,13"/>`);
+  return `<g transform="translate(${x},${y}) scale(${m},1)">${g}</g>`;
+}
+const pin=(x,y,m=1)=>({t:[x+10*m,y-25],b:[x+10*m,y+25],g:[x-25*m,y]});
+function res(x,y1,y2){ // vertical zigzag
+  const n=6,h=(y2-y1-16)/n;let pts=[[x,y1],[x,y1+8]];
+  for(let i=0;i<n;i++)pts.push([x+(i%2?-6:6),y1+8+h*(i+.5)]);
+  pts.push([x,y2-8],[x,y2]);return W(...pts);
+}
+function cap(x,y,len=22){ // vertical cap centred at y, leads of len
+  return W([x,y-len],[x,y-3])+`<line class="w" x1="${x-11}" y1="${y-3}" x2="${x+11}" y2="${y-3}"/><line class="w" x1="${x-11}" y1="${y+3}" x2="${x+11}" y2="${y+3}"/>`+W([x,y+3],[x,y+len]);
+}
+const rail=(x1,x2,y,lab)=>`<line class="rail" x1="${x1}" y1="${y}" x2="${x2}" y2="${y}"/>`+T(x1,y-5,lab,"dev");
+const box=(x,y,w,h,lab,sub="")=>`<rect class="box" x="${x}" y="${y}" width="${w}" height="${h}" rx="2"/>`+T(x+w/2,y+h/2+(sub?-2:4),lab,"big","middle")+(sub?T(x+w/2,y+h/2+13,sub,"dev","middle"):"");
+const arrow=(x,y,dir=1)=>`<polygon points="${x},${y} ${x-7*dir},${y-4} ${x-7*dir},${y+4}" fill="currentColor" style="fill:var(--ink)"/>`;
+function inv(x,y,s=18){return `<polygon class="box" points="${x},${y-s/1.6} ${x},${y+s/1.6} ${x+s},${y}"/><circle class="w" cx="${x+s+3}" cy="${y}" r="3"/>`}
+function dff(x,y,lab){ // 64x76 box; pins: D (x,y+18) CK (x,y+56) Q (x+64,y+18) Qb (x+64,y+56) R (x+32,y+76)
+  return `<rect class="box" x="${x}" y="${y}" width="64" height="76" rx="2"/>`+T(x+32,y+42,lab,"big","middle")+
+   T(x+5,y+22,"D","dev")+`<polyline class="w" points="${x},${y+50} ${x+7},${y+56} ${x},${y+62}"/>`+T(x+59,y+22,"Q","dev","end")+T(x+59,y+60,"Q̅","dev","end");
+}
+
+/* ---------- system ---------- */
+document.getElementById("sys").innerHTML=
+ W([20,70],[80,70])+arrow(80,70)+T(20,62,"REF 5–12.5 MHz","net")+
+ box(80,40,110,90,"PFD","2 DFF + NAND reset")+
+ W([190,62],[240,62])+arrow(240,62)+T(200,56,"UP","net")+W([190,108],[240,108])+arrow(240,108)+T(200,102,"DN","net")+
+ box(240,40,110,90,"Charge pump","≈1.7 µA (est.)")+
+ W([350,85],[420,85])+T(362,78,"VCTRL","net")+dot(400,85)+W([400,85],[400,140])+
+ box(345,140,110,60,"Loop filter","R1 54 k · C1 40 p · C2 2.7 p")+
+ W([420,85],[480,85])+arrow(480,85)+
+ box(480,40,120,90,"VCO","7-stage ring, 40–100 MHz")+
+ W([600,85],[740,85])+arrow(740,85)+T(650,78,"VOUT","net")+dot(690,85)+
+ W([690,85],[690,190],[600,190])+arrow(600,190,-1)+box(500,165,100,50,"÷ 8","3 ripple DFF")+
+ W([500,190],[40,190],[40,110],[80,110])+arrow(80,110)+T(250,184,"FB = VOUT / 8","net");
+
+/* ---------- block schematics ---------- */
+const S={};
+S.vco=(()=>{let s=rail(20,560,30,"VDD")+rail(20,560,300,"VSS");
+  // xp0 diode (mirrored), drain=pb
+  s+=fet(110,70,1,-1)+W([100,45],[100,30])+W([100,95],[100,145])+W([100,108],[135,108],[135,70])+dot(100,108);
+  s+=T(60,66,"xp0","dev")+T(60,78,"57.5/0.5","dev");
+  // cpb pb->VDD
+  s+=cap(46,80,26)+W([46,106],[46,122],[100,122])+dot(100,122)+W([46,54],[46,30])+T(18,90,"cpb","dev")+T(10,102,"17.1p","dev");
+  // xvi
+  s+=fet(90,170,0)+W([65,170],[40,170])+T(16,165,"VCTRL","net")+T(108,174,"xvi 86.2/1","dev");
+  s+=res(100,205,268)+W([100,195],[100,205])+W([100,268],[100,300])+T(112,240,"rdeg 2376 Ω","dev");
+  // xmin
+  s+=fet(185,170,0)+W([195,145],[195,122],[100,122])+W([195,195],[195,300])+W([160,170],[150,170],[150,140])+T(138,136,"VDD","dev")+T(205,174,"xmin 6.05/60","dev");
+  // pb gate line to xp1
+  s+=W([135,70],[275,70]);
+  s+=fet(300,70,1)+W([310,45],[310,30])+T(322,66,"xp1 57.5/0.5","dev");
+  s+=W([310,95],[310,205]);
+  // xn1 diode mirrored
+  s+=fet(320,230,0,-1)+W([310,255],[310,300])+W([310,190],[345,190],[345,230])+dot(310,190)+T(356,250,"xn1 28.7/0.5","dev");
+  // outputs
+  s+=W([195,122],[470,122])+T(478,126,"PB → ring","net")+dot(195,122);
+  s+=W([345,230],[470,230])+dot(345,230)+T(478,234,"NB → ring","net");
+  s+=cap(430,262,16)+W([430,278],[430,300])+T(440,266,"cnb 17.1p","dev");
+  s+=T(140,60,"pb","net");
+  return s})();
+S.ring=(()=>{let s=rail(60,320,30,"VDD")+rail(60,320,310,"VSS");
+  s+=fet(210,70,1)+W([220,45],[220,30])+W([185,70],[150,70])+T(112,74,"PB","net")+T(236,74,"xsp 57.5/0.5","dev");
+  s+=fet(210,130,1)+W([220,95],[220,105])+T(236,134,"xip 28.7/0.15","dev");
+  s+=fet(210,210,0)+W([220,155],[220,185])+dot(220,170)+W([220,170],[300,170])+T(268,163,"OUT","net")+T(236,214,"xin 14.4/0.15","dev");
+  s+=fet(210,270,0)+W([220,235],[220,245])+W([220,295],[220,310])+W([185,270],[150,270])+T(112,274,"NB","net")+T(236,274,"xsn 28.7/0.5","dev");
+  s+=W([185,130],[165,130],[165,210],[185,210])+dot(165,170)+W([100,170],[165,170])+T(80,164,"IN","net");
+  // ring of 7
+  const x0=360;for(let i=0;i<7;i++){s+=inv(x0+i*28,120,14)+(i<6?W([x0+i*28+17,120],[x0+(i+1)*28,120]):"")+T(x0+i*28+5,146,String(i),"dev","middle")}
+  s+=W([x0+6*28+17,120],[x0+6*28+24,120],[x0+6*28+24,160],[x0-12,160],[x0-12,120],[x0,120]);
+  s+=T(352,96,"7 stages, odd count → oscillates","dev")+T(352,186,"placed in order 0 6 1 5 2 4 3","dev")+T(352,200,"so no hop spans > 2 pitches","dev");
+  s+=dot(x0-12,140)+W([x0-12,140],[x0-12,240],[x0+10,240])+T(352,232,"r0 tap → buffer","net");
+  return s})();
+S.buffer=(()=>{let s="";
+  s+=W([20,70],[80,70])+T(20,62,"r0 (ring)","net")+inv(80,70,26)+W([109,70],[170,70])+T(128,62,"o1","net")+inv(170,70,30)+W([203,70],[280,70])+arrow(280,70)+T(225,62,"VOUT","net");
+  s+=T(80,112,"P 2 / N 1","dev")+T(170,112,"P 4 / N 2","dev")+T(20,140,"W µm, L 0.15 µm. First stage loads r0 lightly; second drives the divider and pad.","dev");
+  return s})();
+S.decap=(()=>{let s=rail(20,520,30,"VDD")+rail(20,520,200,"VSS");
+  s+=fet(120,110,0)+W([95,110],[60,110])+T(30,104,"NB","net")+W([130,85],[160,85],[160,135],[130,135])+W([160,135],[160,200])+T(178,114,"S/D + body → VSS","dev")+T(30,170,"NB decap 17.1 pF","big");
+  s+=fet(360,110,0)+W([335,110],[310,110],[310,30])+T(318,48,"gate = VDD","dev")+W([370,85],[400,85],[400,135],[370,135])+W([400,110],[450,110])+T(456,114,"PB","net")+T(280,170,"PB decap 17.1 pF","big");
+  return s})();
+S.digital=(()=>{let s="";
+  // PFD
+  s+=dff(90,20,"DFF U")+dff(90,150,"DFF D");
+  s+=W([60,38],[90,38])+T(42,42,"1","net")+W([60,168],[90,168])+T(42,172,"1","net");
+  s+=W([30,76],[90,76])+T(10,70,"REF","net")+W([30,206],[90,206])+T(16,200,"FB","net");
+  s+=W([154,38],[230,38])+T(180,32,"UP","net")+W([154,168],[230,168])+T(180,162,"DN","net");
+  s+=dot(200,38)+dot(200,168)+W([200,38],[200,92],[250,92])+W([200,168],[200,112],[250,112]);
+  s+=`<path class="box" d="M250 82 h18 a20 20 0 0 1 0 40 h-18 z"/><circle class="w" cx="291" cy="102" r="3"/>`+T(252,140,"NAND","dev");
+  s+=W([294,102],[310,102])+box(310,86,60,32,"delay","")+W([370,102],[384,102],[384,236],[122,236],[122,226]);
+  s+=W([122,236],[122,240])+W([384,124],[122,124],[122,96])+T(392,180,"RSTB","net")+T(392,192,"(resets both)","dev");
+  s+=W([230,38],[240,38])+inv(240,38,14)+W([257,38],[280,38])+T(285,42,"UPB","net");
+  s+=W([230,168],[280,168])+T(285,172,"DN","net");
+  // divider
+  const y=280;
+  s+=T(10,y-12,"÷ 8 ripple divider: each DFF has D tied to Q̅, so it toggles and halves the frequency","dev");
+  for(let i=0;i<3;i++){const x=90+i*130;s+=dff(x,y,"÷2");
+    s+=W([x+64,y+56],[x+84,y+56],[x+84,y+96],[x-14,y+96],[x-14,y+18],[x,y+18]);
+    if(i<2)s+=W([x+84,y+56],[x+130,y+56]);}
+  s+=W([30,y+56],[90,y+56])+T(10,y+50,"VOUT","net");
+  s+=W([474,y+18],[500,y+18])+box(500,y+4,46,28,"buf","")+W([546,y+18],[580,y+18])+T(560,y+10,"FB","net");
+  return s})();
+S.cp=(()=>{let s=rail(20,560,30,"VDD")+rail(20,560,305,"VSS");
+  s+=res(100,30,125)+T(112,82,"xrb 480 µm","dev")+T(112,94,"≈ 692 kΩ","dev")+W([100,125],[100,235]);
+  s+=fet(110,260,0,-1)+W([100,285],[100,305])+W([100,215],[135,215],[135,260])+dot(100,215)+T(42,262,"xnr 1/2","dev");
+  s+=fet(210,260,0)+W([135,260],[185,260])+W([220,285],[220,305])+T(226,290,"xnp 1/2","dev");
+  s+=W([135,215],[290,215],[290,260],[305,260])+dot(135,215)+T(140,208,"nr","net");
+  s+=fet(230,60,1,-1)+W([220,35],[220,30])+W([220,85],[220,235])+W([220,100],[255,100],[255,60])+dot(220,100)+T(160,58,"xpr 2.5/2","dev");
+  s+=W([255,60],[305,60]);
+  s+=fet(330,60,1)+W([340,35],[340,30])+T(354,64,"xpu 2.5/2","dev");
+  s+=fet(330,120,1)+W([340,85],[340,95])+W([305,120],[290,120])+T(262,124,"UPB","net")+T(354,124,"xpusw 1/0.5","dev");
+  s+=fet(330,200,0)+W([340,145],[340,175])+W([305,200],[296,200])+T(268,204,"DN","net")+T(354,204,"xndsw 0.5/0.5","dev");
+  s+=fet(330,260,0)+W([340,225],[340,235])+W([340,285],[340,305])+T(354,264,"xnd 1/2","dev");
+  s+=dot(340,160)+W([340,160],[540,160])+T(380,152,"VCTRL → VCO","net");
+  s+=cap(440,232,46)+T(454,236,"C2 2.67 pF","dev")+W([440,278],[440,305]);
+  s+=dot(500,160)+res(500,160,225)+T(510,196,"R1 54 kΩ","dev")+W([500,225],[500,232])+T(510,232,"LF","net")+cap(500,262,30)+T(514,266,"C1 40 pF","dev")+W([500,292],[500,305]);
+  return s})();
+S.lf=(()=>{let s=rail(20,420,190,"VSS");
+  s+=W([20,50],[380,50])+T(20,42,"VCTRL (from CP, to VCO gate)","net")+dot(150,50)+dot(300,50);
+  s+=cap(150,120,67)+T(166,124,"C2 2.67 pF · ripple filter","dev")+W([150,187],[150,190]);
+  s+=res(300,50,110)+T(312,84,"R1 54 kΩ · adds the stabilising zero","dev")+T(312,122,"LF","net")+cap(300,150,37)+T(316,154,"C1 40 pF · integrates CP current","dev");
+  return s})();
+
+const PLATES=[
+ {id:"xmin",tag:"VCO",sch:"vco",vb:"0 0 560 320",
+  what:"A very long, narrow NMOS (W 6.05 µm, L 60 µm) with its gate tied to VDD, in parallel with the V-to-I transistor. It always conducts a small floor current into the PB node, so the ring never stalls when VCTRL starts at 0 V during power-up. Its 60 µm length is why it is the tallest thing in the strip.",
+  rows:[["xmin","nfet","6.05 / 60","floor current, gate = VDD"]]},
+ {id:"bias",tag:"VCO",sch:"vco",vb:"0 0 560 320",
+  what:"Turns the control voltage into a current. VCTRL drives xvi, whose source is degenerated by rdeg, so the current is roughly (VCTRL − Vt) / rdeg: nearly linear and with a low, controlled VCO gain. The diode xp0 turns that current into the PB voltage. xp1 and xn1 mirror it into NB. Every ring stage copies these two bias voltages, so all seven stages run at the same current.",
+  rows:[["xvi","nfet","86.22 / 1","V-to-I, gate = VCTRL"],["rdeg","xhigh_po","2376 Ω","source degeneration (sets Kvco)"],["xp0","pfet","57.48 / 0.5","diode, makes PB"],["xp1","pfet","57.48 / 0.5","mirror to NB branch"],["xn1","nfet","28.74 / 0.5","diode, makes NB"]]},
+ {id:"ring",tag:"VCO",sch:"ring",vb:"0 0 560 320",
+  what:"Seven current-starved inverters in a loop. Each stage is an inverter (xip / xin, minimum length 0.15 µm for speed) sandwiched between a PMOS and an NMOS current source (xsp / xsn), gated by PB and NB. More bias current charges each node faster, so frequency rises with VCTRL. In the crop, each column is one stage, top to bottom xsp, xip, xin, xsn. The stages sit in folded order so the loop closes without a long return wire.",
+  rows:[["xsp ×7","pfet","57.48 / 0.5","current source, gate = PB"],["xip ×7","pfet","28.74 / 0.15","inverter pull-up"],["xin ×7","nfet","14.37 / 0.15","inverter pull-down"],["xsn ×7","nfet","28.74 / 0.5","current source, gate = NB"]]},
+ {id:"buffer",tag:"VCO",sch:"buffer",vb:"0 0 560 150",
+  what:"Two plain inverters that tap ring node r0 and square up its slow edges into a rail-to-rail clock. The small first stage barely loads the ring; the second, twice as wide, drives the divider and the output.",
+  rows:[["xbp / xbn","p / n","2 / 0.15, 1 / 0.15","first inverter"],["xcp / xcn","p / n","4 / 0.15, 2 / 0.15","output inverter"]]},
+ {id:"dnb",tag:"VCO noise",sch:"decap",vb:"0 0 520 210",
+  what:"A 17.1 pF capacitor from NB to ground, built as NMOS gates in inversion (several times denser than MiM). Noise on NB is common to every ring stage and shows up directly as jitter. This capacitor shorts that noise to ground. It cost no power and was the cheapest jitter fix available.",
+  rows:[["cnb","nfet cap","W 10 / L 8 fingers","17.1 pF, gate NB, S/D + body VSS"]]},
+ {id:"dpb",tag:"VCO noise",sch:"decap",vb:"0 0 520 210",
+  what:"The PB-side twin: 17.1 pF from PB to VDD, so PB follows supply moves and the PMOS current sources see a steady gate-to-source voltage. That is part of why a ±50 mV supply step does not slip a cycle.",
+  rows:[["cpb","nfet cap","W 10 / L 8 fingers","17.1 pF, gate VDD, S/D PB"]]},
+ {id:"digital",tag:"Digital",sch:"digital",vb:"0 0 600 390",
+  what:"One row of sky130_fd_sc_hd standard cells, hand-placed and routed. The PFD is two resettable flip-flops with D tied high: REF sets UP, FB sets DN, and as soon as both are high a NAND plus delay cell resets them. The brief overlap removes the dead zone around zero phase error. The ÷8 divider is three toggle flip-flops in a ripple chain plus a buffer, producing the FB clock.",
+  rows:[["PFD","dfrtp_1 ×2, nand2_1, dlygate4sd3_1, inv_1","—","phase / frequency compare"],["÷8","dfxbp_1 ×3, buf_2","—","VOUT / 8 → FB"],["tie","conb_1, tap","—","logic 1, well taps"]]},
+ {id:"cp",tag:"Analog",sch:"cp",vb:"0 0 560 320",
+  what:"A long resistor xrb sets a reference current of about 1.7 µA (estimate) into the diode xnr. Long-channel mirrors copy it into a sinking branch (xnd) and, via xnp → xpr, a sourcing branch (xpu). The UP / DN pulses switch these onto VCTRL through drain-side switches. The right part of the crop is xrb, cut into 24 segments of ≤ 20 µm, plus the two segments of R1, the loop's stabilising resistor.",
+  rows:[["xrb","xhigh_po","480 µm (≈ 692 kΩ)","sets Icp"],["xnr / xnd / xnp","nfet","1 / 2","NMOS mirror"],["xpr / xpu","pfet","2.5 / 2","PMOS mirror"],["xpusw","pfet","1 / 0.5","UP switch (gate UPB)"],["xndsw","nfet","0.5 / 0.5","DN switch"],["xr1","xhigh_po","37.5 µm (54 kΩ)","loop zero"]]},
+ {id:"c1",tag:"Loop filter",sch:"lf",vb:"0 0 560 200",
+  what:"The integrating capacitor. Charge-pump pulses accumulate here into a steady VCTRL. Its size sets the loop bandwidth and how much each pulse disturbs the VCO. 22 MiM units of 30 × 30 µm in an 11 × 2 array, with top plates joined on met4 and bottom plates merged on met3 to ground. It is about 40 % of the die. The S7 redesign cut it to a third (with the charge-pump current also divided by 3), which is the main reason the die is so small.",
+  rows:[["xc1","cap_mim_m3_1","22 × 30×30 µm","40 pF (≈ 2 fF/µm²)"]]},
+ {id:"c2",tag:"Loop filter",sch:"lf",vb:"0 0 560 200",
+  what:"A small shunt capacitor directly on VCTRL. It filters the sharp steps each charge-pump pulse makes across R1, keeping VCTRL ripple under 0.12 mV and the output spur low. Two 26 × 26 µm MiM units.",
+  rows:[["xc2","cap_mim_m3_1","2 × 26×26 µm","2.67 pF"]]}];
+
+document.getElementById("plates").innerHTML=PLATES.map(p=>{
+  const b=BLOCKS.find(x=>x.id===p.id),d=dims(b),a=area(b);
+  return `<article class="plate" id="${p.id}">
+   <figure class="crop" style="margin:0"><img src="img/${p.id}.png" alt="Layout crop of ${b.name}" loading="lazy"><figcaption>${fmt(d.w)} × ${fmt(d.h)} µm</figcaption></figure>
+   <div class="body">
+     <div><span class="tag">${p.tag}</span></div>
+     <h3>${b.name}</h3>
+     <dl class="facts"><dt>Footprint</dt><dd>${fmt(d.w)} × ${fmt(d.h)} µm</dd><dt>Area</dt><dd>${fmt(a,0)} µm² · ${fmt(a/CHIP_AREA*100)} % of die</dd><dt>Position</dt><dd>x ${fmt(b.bb[0])}–${fmt(b.bb[2])}, y ${fmt(b.bb[1])}–${fmt(b.bb[3])}</dd></dl>
+     <p>${p.what}</p>
+     <div class="tblwrap"><table class="dev"><thead><tr><th>Device</th><th>Type</th><th>W / L (µm) or value</th><th>Role</th></tr></thead><tbody>
+       ${p.rows.map(r=>`<tr><td class="mono">${r[0]}</td><td>${r[1]}</td><td class="mono">${r[2]}</td><td>${r[3]}</td></tr>`).join("")}</tbody></table></div>
+   </div>
+   <div class="sch-wrap"><div class="eyebrow" style="margin-bottom:6px">Circuit</div><svg class="sch" viewBox="${p.vb}">${S[p.sch]}</svg></div>
+  </article>`}).join("");
+
+// highlight hotspot when its plate is hovered
+document.querySelectorAll(".plate").forEach(pl=>{const h=document.getElementById("hot-"+pl.id);
+  pl.addEventListener("mouseenter",()=>h&&h.classList.add("on"));pl.addEventListener("mouseleave",()=>h&&h.classList.remove("on"))});
+</script>
+
+</body></html>
