@@ -155,34 +155,34 @@ footer{margin-top:56px;font-size:12.5px;color:var(--mute);display:grid;gap:6px;b
   <a href="/pjsilicon/pruthapll/story/">the story →</a>
 </nav>
 <header>
-  <div class="eyebrow">pjsilicon · SKY130 · 1.8 V hard macro · datasheet v1</div>
+  <div class="eyebrow">pjsilicon · SKY130 · 1.8 V hard macro · datasheet v2</div>
   <h1>pruthapll</h1>
   <div class="sub">×8 integer-N charge-pump PLL · 5–12.5 MHz in → 40–100 MHz out · dev name pll_s7c3_k3</div>
-  <p class="lede">DRC and LVS clean. Every number below comes from closed-loop simulation of the extracted netlist (layout capacitances included) unless marked otherwise. Below the spec: the silicon block by block, each with its crop, footprint and transistor-level circuit.</p>
+  <p class="lede">DRC and LVS clean. Every number below comes from simulation of the extracted netlist (layout capacitances included). Nothing here has been measured on silicon. Below the spec: the layout block by block, each with its crop, footprint and transistor-level circuit.</p>
   <div class="badges">
-    <span class="badge ok">✓ DRC 0 · LVS match</span>
+    <span class="badge ok">✓ Magic + KLayout DRC 0 · LVS match</span>
     <span class="badge ok">✓ 10 spec lines verified on extracted netlist</span>
-    <span class="badge warn">◐ 1 proxy · extracted noise run pending</span>
-    <span class="badge">sign-off pack v1 · 2026-10-23</span>
+    <span class="badge warn">◐ noise 15 / 15 under 0.1 % UI, flicker assumed</span>
+    <span class="badge">sign-off pack · 2026-10-31</span>
     <a class="badge" href="https://aihomecloud.com/pjsilicon/pruthapll/story/">How we built it →</a>
   </div>
   <div class="stats">
     <div class="stat"><b>429.5 × 133.8 µm</b><span>die outline</span></div>
     <div class="stat"><b>0.0575 mm²</b><span>area (contract &lt; 0.14)</span></div>
-    <div class="stat"><b>262–833 µW</b><span>power across corners</span></div>
+    <div class="stat"><b>240–833 µW</b><span>power across corners</span></div>
     <div class="stat"><b>17.4–29.2 µs</b><span>lock time, power-up</span></div>
-    <div class="stat"><b>−220.1 dB</b><span>VCO FoM (proxy)</span></div>
+    <div class="stat"><b>−218.4 dB</b><span>FoM, worst corner</span></div>
   </div>
   <nav class="toc" aria-label="Sections"><a href="#spec">01 Spec</a><a href="#char">02 Characterization</a><a href="#layout">03 Layout</a><a href="#floor">04 Floorplan</a><a href="#flow">05 Signal flow</a><a href="#blocks">06 Blocks</a><a href="#verify">07 Verification</a></nav>
 </header>
 
 <section id="spec">
-  <div class="sec-head"><div class="eyebrow">01 · Electrical specification</div><h2>Contract v2 vs extracted silicon</h2>
-  <p>Limits are contract v2, set against 14 published SKY130-class PLLs. Measured ranges span every round-6 point: ss / 1.62 V / 125 °C, ff / 1.98 V at 125 °C and −40 °C, ff and fs at 12.5 MHz, tt at 5 and 12.5 MHz, a Monte Carlo sample, and the two supply-step points.</p></div>
+  <div class="sec-head"><div class="eyebrow">01 · Electrical specification</div><h2>Contract v2 vs extracted netlist</h2>
+  <p>Limits are contract v2, set against 14 published PLLs (90–180 nm, none on SKY130). Simulated ranges span every round-6 point: ss / 1.62 V / 125 °C, ff / 1.98 V at 125 °C and −40 °C, ff and fs at 12.5 MHz, tt at 5 and 12.5 MHz, a Monte Carlo sample, and the two supply-step points.</p></div>
   <div class="card tblwrap"><table class="spec">
-    <thead><tr><th>Parameter</th><th>Condition</th><th>Limit</th><th>Measured</th><th>Margin</th><th>Status</th></tr></thead>
+    <thead><tr><th>Parameter</th><th>Condition</th><th>Limit</th><th>Simulated</th><th>Margin</th><th>Status</th></tr></thead>
     <tbody id="spectbl"></tbody></table></div>
-  <p class="note"><b>✓ Verified</b>: met on the extracted netlist under the stated condition. <b>◐ Proxy</b>: met, but measured on a calibrated proxy rather than the extracted design.<br>* FoM is measured on the S6/S7 proxy VCO (schematic plus calibrated parasitics, rank-matched to full PEX at ρ ≥ 0.991), not on the extracted loop. An extracted-netlist noise run is open, see 07. The two supply-step rows are judged on cycle slips with step_metric.py; a whole-window jitter metric would count the deliberate step.</p>
+  <p class="note"><b>✓ Verified</b>: met on the extracted netlist under the stated condition. <b>◐ Assumption</b>: met, but resting on an assumed input. * Simulated on the C-extracted VCO, not the whole chip, with calibrated device-noise sources and an assumed 1.10 flicker factor; 8 of 15 points have one run. FoM uses extracted whole-PLL power and is −217.3 dB at mean + 2σ, see 07. The two supply-step rows are judged on cycle slips with step_metric.py; a whole-window jitter metric would count the deliberate step.</p>
   <div class="cond">
     <div><b>tt · ss · ff · fs · MC</b>process corners covered</div>
     <div><b>1.62 – 1.98 V</b>VDD (1.8 V ± 10 %)</div>
@@ -199,11 +199,13 @@ footer{margin-top:56px;font-size:12.5px;color:var(--mute);display:grid;gap:6px;b
   <div class="charts2">
     <div class="card chart"><h3>How much VCO current does the noise budget need?</h3><svg class="cv" id="noise" viewBox="0 0 640 310" role="img" aria-label="Jitter vs VCO current scale k, default and calibrated noise model, with 10 ps budget"></svg>
       <div class="legend2"><span><i style="background:var(--mute)"></i>default PDK noise</span><span><i style="background:var(--amber)"></i>calibrated γ (P 0.87–0.92, N 2.35–2.52)</span><span><i style="background:var(--red)"></i>10 ps budget at 100 MHz</span></div>
-      <p class="cap">Period jitter vs VCO current scale k, simulated on the proxy VCO with device noise (not deterministic jitter). Calibrating γ against measured-style noise made k=6 go from 6.79 to 10.63 ps, so the noise budget, not speed, sized the VCO.</p></div>
+      <p class="cap">Period jitter vs VCO current scale k, simulated on the proxy VCO with device noise (not deterministic jitter). Calibrating γ against ngspice .noise analysis made k=6 go from 6.79 to 10.63 ps, so the noise budget, not speed, sized the VCO.</p></div>
     <div class="card chart"><h3>Which layout clears all three walls?</h3><svg class="cv" id="sweet" viewBox="0 0 640 330" role="img" aria-label="Scatter of 15 layout candidates, VCO power vs jitter as fraction of limit"></svg>
       <div class="legend2"><span><i style="background:var(--ok)"></i>feasible</span><span><i style="background:var(--amber)"></i>fails jitter margin</span><span><i style="background:var(--red)"></i>fails range or power</span><span><i style="background:var(--cyan)"></i>shipped #3</span></div>
       <p class="cap">Stage A: 15 extracted layouts from LHS draws over VCO scale and degeneration, each extracted and scored at its worst corner. Walls: jitter ≤ 0.90× limit, 100 MHz reachable at ss / −40 °C, VCO ≤ 900 µW. #3 (scale 0.96, rdeg 2376 Ω, 741 µW) is the only point inside the jitter margin everywhere; #14 is the fallback.</p></div>
   </div>
+  <div class="card chart" style="margin-top:16px"><h3>Device-noise jitter on the extracted VCO</h3><p class="cap" style="margin:0 0 8px">164 calibrated noise sources, 5 corners × 40 / 70 / 100 MHz, 10 µs per run. Includes an assumed flicker factor of 1.10.</p>
+    <img src="img/noise_margin.svg" alt="All 15 corner and frequency points sit below the 0.1 percent UI limit: worst mean 0.079, worst run 0.087, worst mean plus two sigma 0.091" style="width:100%;height:auto;display:block"></div>
 </section>
 
 <section id="layout">
@@ -241,19 +243,22 @@ footer{margin-top:56px;font-size:12.5px;color:var(--mute);display:grid;gap:6px;b
   <div class="sec-head"><div class="eyebrow">07 · Verification status</div><h2>What is proven, what is open</h2></div>
   <div class="ver">
     <div class="card"><h3>✓ Verified</h3><ul>
-      <li><b>✓ Magic DRC, sky130A full style<span>DRCTOTAL 0, re-run on pruthapll.gds itself on 2026-10-23</span></b></li>
-      <li><b>✓ netgen LVS vs generator netlist<span>Circuits match uniquely</span></b></li>
-      <li><b>✓ Magic C-extraction<span>pruthapll_pex.spice, the netlist every round-6 sim ran on</span></b></li>
-      <li><b>✓ Closed-loop PVT on the extracted chip<span>8 / 8 static points PASS, incl. ff / 125 °C power-up lock</span></b></li>
+      <li><b>✓ DRC in two engines<span>Magic DRCTOTAL 0 and KLayout 0.30.12 sky130A_mr.drc 0 items on the final GDS; a seeded control proves the KLayout deck is live</span></b></li>
+      <li><b>✓ netgen LVS vs generator netlist<span>Circuits match uniquely, re-run on the final GDS</span></b></li>
+      <li><b>✓ Closed-loop PVT on the extracted chip<span>every static point passes, incl. ff / 125 °C power-up lock; simulated before the final ECO, which moved no node by more than 0.3 aF, so not re-run</span></b></li>
       <li><b>✓ ±50 mV supply step<span>no cycle slip, 0.090 ref-cycle peak error, 1.27 µs recovery</span></b></li>
+      <li><b>✓ Device-noise jitter, extracted VCO<span>15 / 15 points under 0.1 % UI: 0.079 % worst mean, 0.087 % worst run, 0.091 % worst mean + 2σ; ff / 125 °C at 40 and 70 MHz needed a VDD ramp to start the ring</span></b></li>
+      <li><b>✓ FoM with extracted power<span>−218.4 dB worst mean, −217.3 dB at mean + 2σ; replaces the earlier −220.1 dB proxy estimate</span></b></li>
+      <li><b>✓ Antenna at macro level<span>0 violations; a control structure was flagged</span></b></li>
+      <li><b>✓ Simulated Icp and loop model<span>1.05–2.18 µA, mismatch ≤ 4.8 %; phase margin 59–61.5°, fin/fc ≥ 10.6</span></b></li>
     </ul></div>
-    <div class="card open"><h3>◐ Proxy / partial · ○ Pending</h3><ul>
-      <li class="px"><b>◐ VCO device noise, calibrated γ<span>FoM −220.1 dB on the rank-calibrated proxy, not the extracted loop</span></b></li>
+    <div class="card open"><h3>◐ Limits · ○ Not done</h3><ul>
+      <li><b>○ No silicon<span>every figure here is simulation; nothing has been fabricated or measured</span></b></li>
+      <li class="px"><b>◐ Capacitance-only extraction<span>layout capacitances are in the netlist; interconnect resistance is not</span></b></li>
+      <li class="px"><b>◐ Noise statistics<span>flicker factor 1.10 is assumed; 8 of 15 points have one run, and repeat runs scatter about 9 %</span></b></li>
       <li class="px"><b>◐ Monte Carlo depth<span>one extracted MC sample in round 6; schematic rounds ran eight</span></b></li>
-      <li><b>○ Device-noise jitter on the extracted netlist<span>night run stopped on memory; rerun at lower parallelism</span></b></li>
-      <li><b>○ KLayout DRC cross-check<span>sky130A_mr.drc deck not run yet; Magic is the only DRC so far</span></b></li>
-      <li><b>○ Antenna and density reports<span>normally run at SoC level, after fill</span></b></li>
-      <li><b>○ Measured Icp operating point<span>≈ 1.7 µA is an estimate from the bias resistor</span></b></li>
+      <li class="px"><b>◐ KLayout deck scope<span>seal-ring and floating-metal rules not enabled</span></b></li>
+      <li><b>○ SoC-level antenna and density<span>repeat after SoC routing and fill; macro coverage is in the sign-off pack</span></b></li>
     </ul></div>
   </div>
 </section>
@@ -269,16 +274,17 @@ footer{margin-top:56px;font-size:12.5px;color:var(--mute);display:grid;gap:6px;b
 const SPEC=[
  ["Multiplication ratio","all static points","8","8.00000","exact"],
  ["Output frequency","REF 5–12.5 MHz","40–100 MHz","40, 80, 100 MHz locked","full range"],
- ["Power","all corners","< 1 mW","262–833 µW","17 %"],
+ ["Power","all corners","< 1 mW","240–833 µW","17 %"],
  ["Area","outline","< 0.14 mm²","0.0575 mm²","59 %"],
  ["Lock time","power-up","< 50 µs","17.4–29.2 µs","42 %"],
  ["VCTRL at lock","all static points","0.3–1.4 V","0.59–0.92 V","0.29 V"],
  ["VCTRL ripple","std, locked","< 5 mV","≤ 0.124 mV","97 %"],
  ["Duty cycle","VOUT","45–55 %","50.0–51.9 %","3.1 pts"],
  ["Supply step","±50 mV, tt, 100 MHz","no cycle slip","0 slips · 1.27 µs recovery","0.090 cycle"],
- ["Transient jitter","deterministic","< 0.1 % UI","≤ 0.97 ps","≤ 0.004 % UI"],
- ["VCO FoM *","device noise, 741 µW","≤ −217 dB","−220.1 dB","3.1 dB","proxy"]];
-document.getElementById("spectbl").innerHTML=SPEC.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td class="n">${r[2]}</td><td class="n">${r[3]}</td><td class="n">${r[4]}</td><td>${r[5]?`<span class="st warn">◐ Proxy</span>`:`<span class="st ok">✓ Verified</span>`}</td></tr>`).join("");
+ ["Transient jitter","deterministic","< 0.1 % UI","≤ 0.97 ps · ≤ 0.004 % UI","96 %"],
+ ["Device-noise jitter *","15 PVT points","< 0.1 % UI","≤ 0.079 % mean · ≤ 0.087 % worst run","0.009 % at mean + 2σ","Assumption"],
+ ["FoM *","worst corner, 40 MHz","≤ −217 dB","−218.4 dB","1.4 dB · 0.3 dB at mean + 2σ","Assumption"]];
+document.getElementById("spectbl").innerHTML=SPEC.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td class="n">${r[2]}</td><td class="n">${r[3]}</td><td class="n">${r[4]}</td><td>${r[5]?`<span class="st warn">◐ ${r[5]}</span>`:`<span class="st ok">✓ Verified</span>`}</td></tr>`).join("");
 
 /* ---------- charts ---------- */
 const R6=[["ss · 1.62 V · 125 °C",100,29.211,543.8,.8311,50.0],["ff · 1.98 V · 125 °C",40,17.387,528.9,.6403,51.56],["ff · 1.98 V · −40 °C",40,26.994,311.5,.5875,51.67],
