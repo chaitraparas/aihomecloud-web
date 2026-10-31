@@ -222,7 +222,7 @@ footer{padding:60px 0 80px;color:var(--dim);font-family:var(--mono);font-size:12
   <canvas id="scope" aria-hidden="true"></canvas>
   <div class="wrap">
     <span class="lockpill"><span class="dot" id="lockdot"></span><span id="locktxt">acquiring lock…</span></span>
-    <h1>36 nights.<br><span class="grad">One clock.</span><br><span class="thin">Zero shortcuts.</span></h1>
+    <h1>36 nights.<br><span class="grad">One clock.</span><br><span class="thin">One engineer.</span></h1>
     <p class="lede">How a 2020 internship schematic became a DRC- and LVS-clean 0.0575&nbsp;mm² SkyWater 130&nbsp;nm phase-locked loop. One engineer, a crew of AI models, and thousands of transistor-level simulations running every night, all closing in on one sweet spot.</p>
     <div class="herostats">
       <div><b data-count="3339">3,339</b><span>SPICE decks</span></div>
@@ -249,7 +249,8 @@ footer{padding:60px 0 80px;color:var(--dim);font-family:var(--mono);font-size:12
       <div class="ev big rise"><div class="when">2026-10-18</div><h3>The mission</h3><p>The goal became the most rigorously verified, PVT-calibrated, reproducible open PLL. Every claim must climb the evidence ladder: hypothesis → analytical → transistor → nonlinear → disturbance → PVT → physical.</p></div>
       <div class="ev bad rise"><div class="when">2026-10-20</div><h3>The noise wall</h3><p>Deterministic jitter was a beautiful 0.3&nbsp;ps. Then real device noise was switched on, and it came out at 14.6&nbsp;ps against a 10&nbsp;ps budget.</p></div>
       <div class="ev big rise"><div class="when">2026-10-21 → 23 · 29 commits</div><h3>Layout, stages S0–S9</h3><p>Generated layout, extracted parasitics, calibrated a fast proxy against full extraction, ran a sweet-spot search and closed sign-off pack v1 on the extracted chip.</p></div>
-      <div class="ev bad rise"><div class="when">2026-10-24 · 03:00</div><h3>The Mac gave up</h3><p>Six parallel noise sims at about 14&nbsp;GB each needed about 83&nbsp;GB of RAM on a 64&nbsp;GB machine. The result was a kernel panic. New rule: at most three at once, and measure memory first.</p></div>
+      <div class="ev bad rise"><div class="when">2026-10-24 · 03:00</div><h3>The Mac gave up</h3><p>Six parallel noise sims needed far more than the 64&nbsp;GB machine had. The real cost, found a week later: about 51&nbsp;GB per run, because the deck saved every vector. The result was a kernel panic. New rule: at most three at once, and measure memory first.</p></div>
+      <div class="ev rise"><div class="when">2026-10-30 → 31</div><h3>Closing the open checks</h3><p>Extracted noise on 15 points with replicates: all under 0.1&nbsp;% UI, and the FoM corrected to −218.4&nbsp;dB. A second DRC engine, KLayout, found 5 items Magic had passed; a small GDS fix cleared them. Antenna, measured Icp and the loop model followed.</p></div>
     </div>
 
     <div class="commits rise" id="commitchart">
@@ -298,8 +299,8 @@ footer{padding:60px 0 80px;color:var(--dim);font-family:var(--mono);font-size:12
         <div class="role">Literature · Google AI mode</div>
         <h3>Search</h3>
         <ul>
-          <li>Found the papers behind the contract-v2 benchmark: 14 published PLLs</li>
-          <li>Every number was traced to its source paper by hand</li>
+          <li>Found the papers behind the contract-v2 benchmark: 14 published PLLs at 90–180 nm, none on SKY130</li>
+          <li>Most rows come from one survey table, and jitter definitions vary, so the % UI median is indicative</li>
         </ul>
         <div class="catch"><b>RESULT</b>A jitter target 4× tighter than the published median of 0.42% UI.</div>
       </div>
@@ -328,7 +329,7 @@ footer{padding:60px 0 80px;color:var(--dim);font-family:var(--mono);font-size:12
         <div class="stat rise"><b data-count="80">80</b><span>closed-loop sims per night</span></div>
         <div class="stat rise"><b>108–119<small style="font-size:.45em"> min</small></b><span>per extracted-chip sim</span></div>
         <div class="stat rise"><b data-count="97">97</b><span>layout runs · ~100 GDS files</span></div>
-        <div class="stat rise"><b>₹0.65</b><span>per sim on a GCP C3D VM: 24 runs, bit-identical to the Mac</span></div>
+        <div class="stat rise"><b>₹0.65</b><span>per sim on a GCP C3D VM: 24 runs of one schematic point, bit-identical to the Mac</span></div>
       </div>
       <div class="term rise" aria-label="Round 6 results log from the extracted chip">
         <div class="bar"><i></i><i></i><i></i><em>runs/r6 · extracted chip · 03:12 IST</em></div>
@@ -373,7 +374,7 @@ footer{padding:60px 0 80px;color:var(--dim);font-family:var(--mono);font-size:12
         <div><b>Wall 2 · range</b>At ss / −40&nbsp;°C, bigger rings top out at 81–95&nbsp;MHz, below the 100&nbsp;MHz needed.</div>
         <div><b>Wall 3 · power</b>Above s≈1.15 the VCO alone burns more than 900&nbsp;µW.</div>
       </div>
-      <p class="cap">Winner #3: scale 0.96, degeneration 2376&nbsp;Ω, 741&nbsp;µW VCO, FoM −220.1&nbsp;dB against a ≤ −217 target. The fallback is #14. #13 never ran: its bias rail missed the 0.01&nbsp;µm grid.</p>
+      <p class="cap">Winner #3: scale 0.96, degeneration 2376&nbsp;Ω, 741&nbsp;µW VCO, FoM −220.1&nbsp;dB against a ≤ −217 target (a proxy estimate at this stage; sign-off came in at −218.4&nbsp;dB). The fallback is #14. #13 never ran: its bias rail missed the 0.01&nbsp;µm grid.</p>
     </div>
   </div>
 </section>
@@ -397,19 +398,19 @@ footer{padding:60px 0 80px;color:var(--dim);font-family:var(--mono);font-size:12
   <div class="wrap">
     <div class="k">07 / Sign-off</div>
     <h2 class="rise">Extracted. Shaken.<br><span class="grad">Locked.</span></h2>
-    <p class="lede">The final checks ran on the real extracted netlist, with every parasitic resistor and capacitor in: 8 of 8 PVT and Monte Carlo points passed. A ±50&nbsp;mV supply step caused no cycle slip.</p>
+    <p class="lede">The final checks ran on the real extracted netlist, with every layout capacitance in: 8 of 8 PVT and Monte Carlo points passed. A ±50&nbsp;mV supply step caused no cycle slip.</p>
     <div class="sign">
       <div><b>17–29 µs</b><span>lock time</span><em>✓ limit 50 µs</em></div>
-      <div><b>262–833 µW</b><span>total power</span><em>✓ limit 1 mW</em></div>
+      <div><b>240–833 µW</b><span>total power</span><em>✓ limit 1 mW</em></div>
       <div><b>50.0–51.9%</b><span>duty cycle</span><em>✓ limit 45–55%</em></div>
-      <div class="px"><b>−220.1 dB</b><span>FoM (VCO)</span><em>◐ proxy model · limit ≤ −217</em></div>
+      <div><b>−218.4 dB</b><span>FoM, worst corner</span><em>✓ limit ≤ −217</em></div>
       <div><b>0.59–0.92 V</b><span>Vctrl</span><em>✓ window 0.3–1.4 V</em></div>
       <div><b>≤ 0.12 mV</b><span>Vctrl ripple</span><em>✓ limit 5 mV</em></div>
       <div><b>0.09 cyc</b><span>supply-step phase error</span><em>✓ recovers in 1.27 µs</em></div>
-      <div><b>427</b><span>devices + 24 MiM caps</span><em>✓ Magic DRC / LVS clean</em></div>
+      <div><b>427</b><span>devices + 24 MiM caps</span><em>✓ Magic + KLayout DRC, LVS clean</em></div>
     </div>
-    <p class="legend mono">✓ verified on the extracted netlist · ◐ proxy / partial · ○ pending</p>
-    <div class="honest"><b>◐ PROXY · ○ STILL PENDING</b>The −220.1&nbsp;dB FoM comes from the calibrated proxy model, not yet from device noise on the fully extracted loop. That re-run is the one that crashed the Mac. It's queued again at three sims at a time. DRC is Magic-only so far; KLayout cross-check and antenna and density reports are still to do. This page will be updated when they land.</div>
+    <p class="legend mono">✓ verified on the extracted netlist, in simulation</p>
+    <div class="honest"><b>WHAT THIS DOES NOT PROVE</b>Everything here is simulation; no chip has been fabricated. The extraction covers layout capacitances, not interconnect resistance. Closed-loop runs predate a final GDS fix of 4 tiny regions, which moved no node by more than 0.3&nbsp;aF, so they were not re-run. The noise run assumes a flicker factor of 1.10, 8 of its 15 points have a single run, and repeat runs scatter by about 9&nbsp;%. Worst-case FoM margin narrows to −217.3&nbsp;dB at mean + 2σ. The extracted noise run also corrected the earlier −220.1&nbsp;dB proxy FoM to −218.4&nbsp;dB, which is why it was worth running.</div>
   </div>
 </section>
 
@@ -429,26 +430,26 @@ footer{padding:60px 0 80px;color:var(--dim);font-family:var(--mono);font-size:12
       <tbody>
         <tr class="grp"><td colspan="4">Silicon</td></tr>
         <tr><td>Process</td><td>osu180 (2020)</td><td>SkyWater SKY130</td><td><span class="tag new">open PDK</span></td></tr>
-        <tr><td>Physical layout</td><td>Loop filter never laid out (osu180 had no usable caps)</td><td>Full chip, Magic DRC + Netgen LVS clean</td><td><span class="tag new">new</span></td></tr>
+        <tr><td>Physical layout</td><td>Loop filter never laid out (osu180 had no usable caps)</td><td>Full chip, Magic + KLayout DRC 0, Netgen LVS clean</td><td><span class="tag new">new</span></td></tr>
         <tr><td>Loop filter C1 / C2 / R1</td><td>200&nbsp;pF / 500&nbsp;pF / 500&nbsp;Ω</td><td>40&nbsp;pF / 2.67&nbsp;pF / 54&nbsp;kΩ</td><td><span class="tag up">−94% capacitance</span></td></tr>
         <tr><td>Area</td><td>0.098–0.128&nbsp;mm² <small>caps alone, estimated</small></td><td>0.0575&nbsp;mm² <small>whole chip, 430 × 134 µm</small></td><td><span class="tag up">41–55% smaller, all-in</span></td></tr>
         <tr class="grp"><td colspan="4">Performance</td></tr>
         <tr><td>Period jitter, deterministic <small>at 100 MHz</small></td><td>23.8&nbsp;ps</td><td>0.05–0.14&nbsp;ps</td><td><span class="tag up">≥170× lower</span></td></tr>
-        <tr><td>Period jitter, device noise</td><td>never measured <small>("future work")</small></td><td>&lt; 10&nbsp;ps with calibrated γ <small>proxy model</small></td><td><span class="tag new">new</span></td></tr>
-        <tr><td>FoM</td><td>not computed</td><td>−220.1&nbsp;dB <small>proxy VCO · published median −216.6</small></td><td><span class="tag up">beats median by 3.5 dB (proxy)</span></td></tr>
+        <tr><td>Period jitter, device noise</td><td>never measured <small>("future work")</small></td><td>≤ 0.079&nbsp;% UI worst mean <small>15 of 15 points under 0.1&nbsp;%, extracted VCO</small></td><td><span class="tag new">new</span></td></tr>
+        <tr><td>FoM</td><td>not computed</td><td>−218.4&nbsp;dB <small>worst corner, extracted · published median −216.6</small></td><td><span class="tag up">1.8 dB better in simulation, 0.7 at mean + 2σ</span></td></tr>
         <tr><td>Duty cycle</td><td>spec 48–52%</td><td>50.0–51.9% <small>across all PVT</small></td><td><span class="tag up">in spec everywhere</span></td></tr>
         <tr><td>Lock time</td><td>3.9–18.3&nbsp;µs <small>typical corner only</small></td><td>17.4–29.2&nbsp;µs <small>all PVT, extracted</small></td><td><span class="tag dn">slower; limit is 50 µs</span></td></tr>
-        <tr><td>Power</td><td>538–575&nbsp;µW <small>typical corner only</small></td><td>262–833&nbsp;µW <small>across PVT</small></td><td><span class="tag dn">higher at fast corners; limit is 1 mW</span></td></tr>
+        <tr><td>Power</td><td>538–575&nbsp;µW <small>typical corner only</small></td><td>240–833&nbsp;µW <small>across PVT</small></td><td><span class="tag dn">higher at fast corners; limit is 1 mW</span></td></tr>
         <tr><td>Supply-step robustness</td><td>not tested</td><td>±50&nbsp;mV: 0 cycle slips, 1.27&nbsp;µs recovery</td><td><span class="tag new">new</span></td></tr>
         <tr class="grp"><td colspan="4">Proof</td></tr>
         <tr><td>Corners verified</td><td>1 (typical, 27&nbsp;°C)</td><td>PVT + Monte Carlo, −40 to 125&nbsp;°C, 1.62–1.98&nbsp;V</td><td><span class="tag up">full envelope</span></td></tr>
-        <tr><td>Netlist verified</td><td>Schematic</td><td>Extracted (every parasitic R and C)</td><td><span class="tag up">silicon-realistic</span></td></tr>
+        <tr><td>Netlist verified</td><td>Schematic</td><td>Extracted (layout capacitances, no interconnect resistance)</td><td><span class="tag up">layout-aware</span></td></tr>
         <tr><td>Spec basis</td><td>Internship spec sheet</td><td>Contract v2, benchmarked against 14 published PLLs</td><td><span class="tag up">literature-grade</span></td></tr>
-        <tr><td>Reproducibility</td><td>Manual runs</td><td>Scripted flow; GCP re-run bit-identical to the Mac</td><td><span class="tag new">new</span></td></tr>
+        <tr><td>Reproducibility</td><td>Manual runs</td><td>Scripted flow; one closed-loop point bit-identical on GCP, noise runs scatter about 9&nbsp;%</td><td><span class="tag new">new</span></td></tr>
       </tbody>
     </table>
     </div>
-    <p class="cap mute" style="margin-top:12px;font-size:14px">Baseline numbers: <span class="mono">docs/exp022-ppa-characterization.md</span> and <span class="mono">docs/pareto-frontier-classical.md</span>. Both columns report deterministic jitter as steady-state period standard deviation, but from two generations of the analyzer script. Final numbers: round 6 on the extracted chip and the S9 sign-off pack v1; the extracted-netlist device-noise run, KLayout DRC and antenna/density checks are still pending.</p>
+    <p class="cap mute" style="margin-top:12px;font-size:14px">Baseline numbers: <span class="mono">docs/exp022-ppa-characterization.md</span> and <span class="mono">docs/pareto-frontier-classical.md</span>. Both columns report deterministic jitter as steady-state period standard deviation, but from two generations of the analyzer script.</p>
     <div class="cta">
       <a class="btn" href="/pjsilicon/pruthapll/">Read the datasheet →</a>
       <a class="btn ghost" href="/apps.html#silicon">More things we've built</a>
@@ -457,7 +458,7 @@ footer{padding:60px 0 80px;color:var(--dim);font-family:var(--mono);font-size:12
 </section>
 </main>
 
-<footer><div class="wrap">pjsilicon · pruthapll · SKY130 ×8 integer-N CP-PLL · built 2026-09-17 → 2026-10-23 with Claude, Qwen, ChatGPT and a lot of ngspice.</div></footer>
+<footer><div class="wrap">pjsilicon · pruthapll · SKY130 ×8 integer-N CP-PLL · built 2026-09-17 → 2026-10-23, sign-off closed 2026-10-31, with Claude, Qwen, ChatGPT and a lot of ngspice.</div></footer>
 
 <script>
 (()=>{
